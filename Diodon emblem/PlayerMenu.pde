@@ -14,7 +14,7 @@ public class PlayerMenu {
   int cursorY1, cursorY2, cursorY3;
 
   public PlayerMenu(float x, float y, float h, float w) {
-    menuItems = new ArrayList<>(Arrays.asList("Figth", "End turn", "Test 1", "Test 2", "Test 3"));
+    menuItems = new ArrayList<>(Arrays.asList("Figth", "End turn"));
 
     this.x = (int)x;
     this.y = (int)y;
