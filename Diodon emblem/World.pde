@@ -1,3 +1,6 @@
+
+
+
 class Exploration {
   MapCell cell;
   int distance;
@@ -10,6 +13,10 @@ class Exploration {
   }
 }
 
+
+public enum WorldMenuState {
+  Idle, MovingChar, WaitingForPlayerAction, EndTurn, emptyCellSelected, playerSelected
+}
 
 class World {
   int rows, cols;
@@ -27,7 +34,7 @@ class World {
   int x, y, h, w;
   int nbRows = 8, nbCols = 8;
 
-  FieldManagerState currentState = FieldManagerState.Idle;
+  WorldMenuState currentState = WorldMenuState.Idle;
 
   World(int rows, int cols, float x, float y, float h, float w) {
     // display position
@@ -152,10 +159,10 @@ class World {
     selectedCharacter.newPosition(tileX, tileY);
   }
 
-  void onClick() {
+  void mousePressed() {
     if (mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h) {
       if (mouseX - x < w) {
-        currentState = FieldManagerState.Idle;
+        currentState = WorldMenuState.Idle;
         unHighlightAccessibleTiles();
         println("Going to state : Idle");
       }
@@ -171,7 +178,7 @@ class World {
       selectedCharacter = findCharAtCoordinates(cellX, cellY);
 
       if (selectedCharacter != null) {
-        currentState = FieldManagerState.playerSelected;
+        currentState = WorldMenuState.playerSelected;
         highlightAccessibleTiles();
         println("Going to state : playerSelected");
       }
@@ -180,17 +187,19 @@ class World {
     case playerSelected:
       if (selectedCell.highlighted) { // If cell is accessible by character
         moveSelectedCharacter(cellX, cellY);
+        currentState = WorldMenuState.WaitingForPlayerAction;
       } else {
         println("Cell too far");
+        currentState = WorldMenuState.Idle;
       }
-      currentState = FieldManagerState.Idle;
+      
       println("Going to state : Idle");
 
       unHighlightAccessibleTiles();
       break;
 
     case WaitingForPlayerAction:  // Wait for playerTurnDown() to be called by the main
-      currentState = FieldManagerState.Idle;
+      currentState = WorldMenuState.Idle;
       println("Going to state : Idle");
       break;
 
@@ -201,6 +210,7 @@ class World {
 
   void draw() {
     boolean ret = false;
+    playerMenu.enable = currentState == WorldMenuState.WaitingForPlayerAction;
     if (ret)
       return;
     float tileX = x;
@@ -234,9 +244,5 @@ class World {
     default:
       println("default");
     }
-  }
-
-  void mousePressed() {
-    tiles[int(random(rows))][int(random(cols))].highlighted = true;
   }
 }
