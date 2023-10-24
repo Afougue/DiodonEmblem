@@ -48,13 +48,6 @@ class World {
 
     // Characters informations
     characters = new ArrayList<Character>();
-    var c = new Character("Manu", true, 20, 5, 3);
-    c.newPosition(2,3);
-    characters.add(c);
-    var c2 = new Character("Ciao", false, 15, 7, 2);
-    c2.newPosition(5,3);
-    characters.add(c2);
-    
     enemiesInRange = new ArrayList<Character>();
 
     // generating map (for now empty grassy terrain)
@@ -111,14 +104,14 @@ class World {
 
   void highlightAccessibleTiles() {
     ArrayList<Exploration> ExplorableCells = new ArrayList<Exploration>();
-    
+
     // Add initial cell
     ExplorableCells.add(new Exploration(tiles[selectedCharacter.fieldPosY][selectedCharacter.fieldPosX], selectedCharacter.speed));
     while (!ExplorableCells.isEmpty()) {
       MapCell exploringCell = ExplorableCells.get(0).cell;
       int exploringDistance = ExplorableCells.get(0).distance;
 
-      // remove curren cell and don't 
+      // remove curren cell and don't
       if (exploringDistance <= 0 || exploringCell.type == CellType.MOUNTAIN) {
         exploringCell.highlighted = true;
         ExplorableCells.remove(0);
@@ -155,7 +148,7 @@ class World {
 
     selectedCharacter.newPosition(tileX, tileY);
   }
-  
+
   void endTurn() {
     currentState = WorldMenuState.Idle;
     println("Going to state : Idle");
@@ -179,11 +172,16 @@ class World {
     case Idle:
       selectedCharacter = findCharAtCoordinates(cellX, cellY);
 
-      if (selectedCharacter != null) {
-        currentState = WorldMenuState.playerSelected;
-        highlightAccessibleTiles();
-        println("Going to state : playerSelected");
-      }
+      if (selectedCharacter == null)
+        break;
+
+      if (!selectedCharacter.isHero)
+        break;
+
+      currentState = WorldMenuState.playerSelected;
+      highlightAccessibleTiles();
+      println("Going to state : playerSelected");
+
       break;
 
     case playerSelected:
@@ -196,7 +194,7 @@ class World {
         currentState = WorldMenuState.Idle;
         println("Going to state : Idle");
       }
-      
+
       unHighlightAccessibleTiles();
       break;
 
@@ -227,7 +225,7 @@ class World {
     }
 
     for (var c : characters) {
-      c.draw(x,y,w,h,cols,rows);
+      c.draw(x, y, w, h, cols, rows);
     }
 
     switch(currentState) {
