@@ -36,8 +36,8 @@ public class BattleManager {
       batteling = false;
 
     heroTurn = !heroTurn;
-    
-    if(heroTurn)
+
+    if (heroTurn)
       batteling = false;
   }
 

@@ -23,7 +23,7 @@ class MapCell {
   }
 
   void draw(float x, float y) {
-    color c = color(0,0,0);
+    color c = color(0, 0, 0);
     switch(type) {
     case GRASS:
       c = color(59, 218, 96);

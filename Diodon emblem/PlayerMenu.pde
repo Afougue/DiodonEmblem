@@ -32,36 +32,36 @@ public class PlayerMenu {
   void drawCursorAtIndex() {
     fill(color(255, 177, 74));
     int offsetY = selectedIndex * h / nbLines;
-    
+
     triangle(cursorX1, cursorY1 + offsetY,
       cursorX2, cursorY2  + offsetY,
       cursorX1, cursorY3  + offsetY); // cursorX3 = cursorX1 so we don't need an extra variable
     fill(color(255, 255, 255));
   }
-  
-  void changeIndexByOvering() {    
+
+  void changeIndexByOvering() {
     if (!cursorInsideMenu()) {
-        selectedIndex = 0;
-        return;
+      selectedIndex = 0;
+      return;
     }
-    
+
     selectedIndex = (int)((mouseY - y) / (float)h * nbLines);
-    
-    if(selectedIndex >= menuItems.size())
+
+    if (selectedIndex >= menuItems.size())
       selectedIndex = 0;
   }
-  
- boolean cursorInsideMenu() {
-   return !(mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h);
- }
+
+  boolean cursorInsideMenu() {
+    return !(mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h);
+  }
 
   void draw() {
     // BattleManager frame
-    
+
     fill(enable ? color(255, 255, 255) : color(200, 200, 200));
     rect(x, y, w, h);
-    
-    if(!enable)
+
+    if (!enable)
       return;
 
     // Draw cursor
@@ -70,12 +70,12 @@ public class PlayerMenu {
     // Draw text underline
     noStroke();
     fill(color(255, 177, 74));
-    
+
     final int maxTextChar = 8;
     int currentTextChar = menuItems.get(selectedIndex).length();
     //String currentText = menuItems.get(selectedIndex);
     //int currentTextChar = currentText.size();
-    
+
     rect(x + 10, y + 35 + h/nbLines * selectedIndex,
       (w - 20) * (float)currentTextChar / maxTextChar, 3);
 

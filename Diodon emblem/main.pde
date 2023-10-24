@@ -19,7 +19,7 @@ void setup () {
 
   ArrayList<Tool> cTools = new ArrayList<>(Arrays.asList(new Weapon("Couteau", 5, 1), new Weapon("Épée", 10, 1)));
   ArrayList<Tool> c2Tools = new ArrayList<>(Arrays.asList(new Weapon("Épingle", 2, 1), new Weapon("Massue", 7, 1)));
-  
+
   c.tools = cTools;
   c2.tools = c2Tools;
 
@@ -32,12 +32,11 @@ void setup () {
     world.y,
     world.h,
     width - (world.x + world.w + 20));
-    
-  inventoryMenu = new InventoryMenu(world.x, 
-  world.y + world.h + 10,
-  height - (world.y + world.h + 20),
-  world.w,
-  characters);
+
+  inventoryMenu = new InventoryMenu(world.x,
+    world.y + world.h + 10,
+    height - (world.y + world.h + 20),
+    world.w);
 }
 
 void  draw() {
@@ -56,10 +55,10 @@ void  draw() {
 
 void update() {
   boolean enableMenus = world.currentState == WorldMenuState.WaitingForPlayerAction;
-  
+
   playerMenu.enable = enableMenus;
   inventoryMenu.enable = enableMenus;
-  
+
   inventoryMenu.currentChar = world.selectedCharacter;
 }
 
@@ -85,4 +84,7 @@ void mousePressed() {
 void mouseMoved() {
   if (playerMenu.enable)
     playerMenu.changeIndexByOvering();
+
+  if (inventoryMenu.enable)
+    inventoryMenu.updateCurrentOveringToolIndex();
 }

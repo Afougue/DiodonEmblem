@@ -3,7 +3,7 @@ public class Character {
   int hpMax, hp, strength, speed;
   boolean isHero = false;
   boolean flying = false;
-  
+
   ArrayList<Tool> tools;
   int toolSelectedIndex = -1;
 
@@ -21,7 +21,7 @@ public class Character {
     fieldPosX = 5;
     fieldPosY = 3;
   }
-  
+
   int damage() {
     return strength;
   }
