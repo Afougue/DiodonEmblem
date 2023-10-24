@@ -155,6 +155,11 @@ class World {
 
     selectedCharacter.newPosition(tileX, tileY);
   }
+  
+  void endTurn() {
+    currentState = WorldMenuState.Idle;
+    println("Going to state : Idle");
+  }
 
   void mousePressed() {
     if (mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h) {

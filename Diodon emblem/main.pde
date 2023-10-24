@@ -39,6 +39,13 @@ void mousePressed() {
     //world.resetSelectedChar();
     //world.playerTurnDone();
   }
+  
+  if(playerMenu.selectedIndex == 1 && !battleManager.batteling && world.currentState == WorldMenuState.WaitingForPlayerAction) {
+    world.endTurn();
+    playerMenu.selectedIndex = 0;
+  }
+  
+  println("");
 }
 
 void mouseMoved() {
