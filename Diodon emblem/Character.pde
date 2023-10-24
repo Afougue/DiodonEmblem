@@ -1,10 +1,11 @@
 public class Character {
   String name;
   int hpMax, hp, strength, speed;
-  boolean isHero;
+  boolean isHero = false;
   boolean flying = false;
   
-  Weapon weapon;
+  ArrayList<Tool> tools;
+  int toolSelectedIndex = -1;
 
   // Display variables
   int fieldPosX, fieldPosY;
@@ -19,12 +20,10 @@ public class Character {
 
     fieldPosX = 5;
     fieldPosY = 3;
-    
-    weapon = new Weapon(10, 2);
   }
   
   int damage() {
-    return (strength + weapon.damage) / 2;
+    return strength;
   }
 
   void newPosition(int cellX, int cellY) {

@@ -1,22 +1,30 @@
 class Tool {
+  String name;
+  int efficiency, range, durability;
+  // int precison; // Value from 0 to 100
+  
+  public Tool(String toolName, int toolEfficiency, int toolRange) {
+    name = toolName;
+    efficiency = toolEfficiency;
+    range = toolRange;
+    
+    durability = 100;
+  }
 }
 
 class Weapon extends Tool {
-  int damage;
-  int range;
-  int durability;
+  // int criticalChance; //Value from 0 to 100
   
-  public Weapon(int weaponDamage, int weaponRange) {
-    damage = weaponDamage;
-    range = weaponRange;
+  public Weapon(String weaponName, int weaponDamage, int weaponRange) {
+    super(weaponName, weaponDamage, weaponRange);
   }
 }
 
 class PhysicalWeapon extends Weapon {
   PhysicalWeaponType type;
   
-  PhysicalWeapon(int weaponDamage, int weaponRange, PhysicalWeaponType weaponType) {
-    super(weaponDamage, weaponRange);
+  PhysicalWeapon(String weaponName, int weaponDamage, int weaponRange, PhysicalWeaponType weaponType) {
+    super(weaponName, weaponDamage, weaponRange);
     
     type = weaponType;
   }  
@@ -25,14 +33,17 @@ class PhysicalWeapon extends Weapon {
 class MagicalWeapon extends Weapon {
   MagicalWeaponType type;
   
-  MagicalWeapon(int weaponDamage, int weaponRange, MagicalWeaponType weaponType) {
-    super(weaponDamage, weaponRange);
+  MagicalWeapon(String weaponName, int weaponDamage, int weaponRange, MagicalWeaponType weaponType) {
+    super(weaponName, weaponDamage, weaponRange);
     
     type = weaponType;
   }  
 }
 
-class Staff extends Tool {
+class Staff extends Tool {  
+  public Staff(String staffName, int staffEfficiency, int staffRange) {
+   super(staffName, staffEfficiency, staffRange);
+  }
 }
 
 enum PhysicalWeaponType {
@@ -42,3 +53,5 @@ enum PhysicalWeaponType {
 enum MagicalWeaponType {
   Fire, Ice, Thunder, Wind, Light, Dark
 }
+
+// enum staffType : heal, buff, debuff ...

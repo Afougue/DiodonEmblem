@@ -33,7 +33,7 @@ class World {
 
   WorldMenuState currentState = WorldMenuState.Idle;
 
-  World(int rows, int cols, float x, float y, float h, float w) {
+  World(int rows, int cols, float x, float y, float h, float w, ArrayList<Character> chars) {
     // display position
     this.x = (int)x;
     this.y = (int)y;
@@ -47,7 +47,7 @@ class World {
     //this.tileSize =
 
     // Characters informations
-    characters = new ArrayList<Character>();
+    characters = chars;
     enemiesInRange = new ArrayList<Character>();
 
     // generating map (for now empty grassy terrain)
@@ -210,9 +210,10 @@ class World {
 
   void draw() {
     boolean ret = false;
-    playerMenu.enable = currentState == WorldMenuState.WaitingForPlayerAction;
+
     if (ret)
       return;
+
     float tileX = x;
     float tileY = y;
     for (int i = 0; i < rows; i++) {
