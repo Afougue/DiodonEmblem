@@ -1,6 +1,3 @@
-
-
-
 class Exploration {
   MapCell cell;
   int distance;
@@ -188,19 +185,19 @@ class World {
       if (selectedCell.highlighted) { // If cell is accessible by character
         moveSelectedCharacter(cellX, cellY);
         currentState = WorldMenuState.WaitingForPlayerAction;
+        println("Going to state : WaitingForPlayerAction");
       } else {
         println("Cell too far");
         currentState = WorldMenuState.Idle;
+        println("Going to state : Idle");
       }
       
-      println("Going to state : Idle");
-
       unHighlightAccessibleTiles();
       break;
 
     case WaitingForPlayerAction:  // Wait for playerTurnDown() to be called by the main
-      currentState = WorldMenuState.Idle;
-      println("Going to state : Idle");
+      //currentState = WorldMenuState.Idle;
+      //println("Going to state : Idle");
       break;
 
     default:

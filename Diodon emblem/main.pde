@@ -27,22 +27,18 @@ void  draw() {
   }
 }
 
-void keyPressed() {
-}
-
 void mousePressed() {
-  //println("mouseClick : ",mouseX," ",mouseY);
   world.mousePressed();
 
   if (battleManager.batteling) {
     battleManager.play();
   }
-  /*
+  
   if (playerMenu.selectedIndex == 0 && playerMenu.cursorInsideMenu() && !battleManager.batteling) {
-    //battleManager.startBattle(new Character("Patrick", true, 50, 10, 2), new Character("Titouan", false, 30, 8, 2));
-    fieldManager.resetSelectedChar();
-    fieldManager.playerTurnDone();
-  }*/
+    battleManager.startBattle(new Character("Patrick", true, 50, 10, 2), new Character("Titouan", false, 30, 8, 2));
+    world.resetSelectedChar();
+    world.playerTurnDone();
+  }
 }
 
 void mouseMoved() {

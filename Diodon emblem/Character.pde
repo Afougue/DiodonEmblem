@@ -3,6 +3,8 @@ public class Character {
   int hpMax, hp, strength, speed;
   boolean isHero;
   boolean flying = false;
+  
+  Weapon weapon;
 
   // Display variables
   int fieldPosX, fieldPosY;
@@ -17,6 +19,12 @@ public class Character {
 
     fieldPosX = 5;
     fieldPosY = 3;
+    
+    weapon = new Weapon(10, 2);
+  }
+  
+  int damage() {
+    return (strength + weapon.damage) / 2;
   }
 
   void newPosition(int cellX, int cellY) {

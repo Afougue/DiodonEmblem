@@ -28,9 +28,9 @@ public class BattleManager {
       return;
 
     if (!heroTurn)
-      hero.hp -= villain.strength;
+      hero.hp -= villain.damage();
     else
-      villain.hp -= hero.strength;
+      villain.hp -= hero.damage();
 
     if (hero.hp < 0 || villain.hp < 0)
       batteling = false;
