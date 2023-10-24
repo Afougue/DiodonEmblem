@@ -29,6 +29,7 @@ void keyPressed() {
 }
 
 void mousePressed() {
+  //println("mouseClick : ",mouseX," ",mouseY);
   fieldManager.onClick();
 
   if (battleManager.batteling) {

@@ -1,7 +1,7 @@
 import java.util.Optional;
 
 public enum FieldManagerState {
-  Idle, MovingChar, WaitingForPlayerAction
+  Idle, MovingChar, WaitingForPlayerAction, EndTurn, emptyCellSelected, playerSelected
 }
 
 public class FieldManager {
@@ -20,6 +20,8 @@ public class FieldManager {
   int x, y, h, w;
   int nbRows = 8, nbCols = 8;
   int clickedTileX = -1, clickedTileY = -1;
+  
+  World world;
 
   public FieldManager(float x, float y, float h, float w) {
     this.x = (int)x;
@@ -34,6 +36,7 @@ public class FieldManager {
     characters.add(new Character("Ciao", false, 15, 7, 2));
 
     enemiesInRange = new ArrayList<Character>();
+    world = new World(8, 8, x, y, h, w);
   }
 
   void moveToNextState() {
@@ -49,6 +52,7 @@ public class FieldManager {
   }
 
   void onClick() {
+    world.onClick();
     if (mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h)
       return;
 
@@ -57,7 +61,7 @@ public class FieldManager {
 
     switch(currentState) {
     case Idle:
-      println("Idle");
+      //println("Idle");
       selectedCharacter = findCharAtCoordinates(tmpX, tmpY);
       clickedTileX = tmpX;
       clickedTileY = tmpY;
@@ -66,7 +70,7 @@ public class FieldManager {
       break;
 
     case MovingChar:
-      println("MovingChar");
+      //println("MovingChar");
       moveCharacter(tmpX, tmpY);
       fillEnemiesInRange(); // Check if there're enemies next to the new position
       moveToNextState();
@@ -74,11 +78,11 @@ public class FieldManager {
       break;
 
     case WaitingForPlayerAction:  // Wait for playerTurnDown() to be called by the main
-      println("WaitingForPlayerAction");
+      //println("WaitingForPlayerAction");
       break;
 
     default:
-      println("default");
+      //println("default");
     }
   }
 
@@ -171,7 +175,8 @@ public class FieldManager {
       fill(c.isHero ? color(0, 0, 255) : color(255, 0, 0));
       rect(x + w/nbRows * c.fieldPosX + 7, y + h/nbCols * c.fieldPosY - 20, 35, 60);
     }
-
+    
+    world.draw();
     fill(color(255, 255, 255));
   }
 }
