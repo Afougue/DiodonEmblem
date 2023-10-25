@@ -1,5 +1,5 @@
 # DiodonEmblem
 
-Hello
+DiodonEmblem is a small project to try the Processing IDE with my friend Bastian :)
 
-Small game to test the Java Processing IDE
+The goal is to reproduce a Fire Emblem game and to use some open source sprites from the game Duelyst
