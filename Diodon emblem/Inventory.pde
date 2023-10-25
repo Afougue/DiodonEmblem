@@ -36,10 +36,7 @@ class InventoryMenu {
     fill(enable ? color(255, 255, 255) : color(200, 200, 200));
     rect(x, y, w, h);
 
-    if (currentChar == null)
-      return;
-
-    if (!enable)
+    if (currentChar == null || !enable)
       return;
 
     noStroke();
@@ -77,13 +74,15 @@ class InventoryMenu {
   }
 
   void drawCurrentOveringItemIndexBackground() {
-    if (currentOveringToolIndex >= currentChar.tools.size())
-      return;
-
-    if (currentOveringToolIndex == -1)
+    if (currentOveringToolIndex == -1 || currentOveringToolIndex >= currentChar.tools.size())
       return;
 
     fill(190, 230, 255, 128);
     rect(x + 3 + offsetX * currentOveringToolIndex, y + 3, offsetX - 3, h - 6);
+  }
+  
+  void mousePressed(){
+    
+    
   }
 }

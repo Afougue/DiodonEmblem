@@ -9,17 +9,22 @@ public class Character {
 
   // Display variables
   int fieldPosX, fieldPosY;
+  int isSelected; // might be used later to have a custom animation when char is selected
+  float hoverY;
+  float hoverStep = 0.1;
+  
 
-  public Character(String name, boolean hero, int hp, int str, int spd) {
+  public Character(String name, boolean hero, int hp, int str, int spd, boolean fly) {
     this.name = name;
     hpMax = this.hp = hp;
 
     isHero = hero;
     strength = str;
     speed = spd;
+    flying = fly;
 
-    fieldPosX = 5;
-    fieldPosY = 3;
+    fieldPosX = 0;
+    fieldPosY = 0;
   }
 
   int damage() {
@@ -33,6 +38,20 @@ public class Character {
 
   void draw(float x, float y, float w, float h, float cols, float rows) {
     fill(isHero ? color(0, 0, 255) : color(255, 0, 0));
-    rect(x + w/rows * fieldPosX + 7, y + h/cols * fieldPosY - 20, 35, 60);
+    
+    hoverY += hoverStep;
+    if (hoverY > 10 || hoverY < 0) hoverStep *= -1;
+    if(!flying) hoverY = 0;
+    
+    rect(x + w/rows * fieldPosX + 7, y + h/cols * fieldPosY - 20 - hoverY, 35, 60);
   }
+  
+  int getCurrentToolRange(){
+    if (toolSelectedIndex == -1){
+      return 0;
+    }
+    return tools.get(toolSelectedIndex).range;
+  }
+  
+  
 }

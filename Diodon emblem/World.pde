@@ -22,8 +22,12 @@ class World {
   MapCell[][] tiles;
 
   ArrayList<Character> characters;
-  ArrayList<Character> enemiesInRange;
 
+  ArrayList<MapCell> accessibleTiles; // can be used to greately optimise the code later
+  ArrayList<MapCell> attackableTiles; // can be used to greately optimise the code later
+  ArrayList<Character> charactersInRange; // Used
+  Random random = new Random();
+  
   Character selectedCharacter = null;
   MapCell selectedCell = null;
 
@@ -44,12 +48,12 @@ class World {
     this.rows = rows;
     this.cols = cols;
     this.tiles = new MapCell[rows][cols];
-    //this.tileSize =
 
     // Characters informations
     characters = chars;
-    enemiesInRange = new ArrayList<Character>();
-
+    charactersInRange = new ArrayList<>();
+    accessibleTiles = new ArrayList<>();
+    
     // generating map (for now empty grassy terrain)
     tileHeight = h / cols;
     tileWidth = w / rows;
@@ -58,11 +62,13 @@ class World {
         float rand = random(1);
         if (rand > 0.8) {
           tiles[i][j] = new MapCell(CellType.MOUNTAIN, tileHeight, tileWidth, j, i);
+          
         } else {
           tiles[i][j] = new MapCell(CellType.GRASS, tileHeight, tileWidth, j, i);
         }
       }
     }
+    tiles[3][2].type = CellType.GRASS;
   }
 
   Character findCharAtCoordinates(int tileX, int tileY) {
@@ -104,6 +110,7 @@ class World {
 
   void highlightAccessibleTiles() {
     ArrayList<Exploration> ExplorableCells = new ArrayList<Exploration>();
+    accessibleTiles = new ArrayList<>();
 
     // Add initial cell
     ExplorableCells.add(new Exploration(tiles[selectedCharacter.fieldPosY][selectedCharacter.fieldPosX], selectedCharacter.speed));
@@ -112,33 +119,91 @@ class World {
       int exploringDistance = ExplorableCells.get(0).distance;
 
       // remove curren cell and don't
-      if (exploringDistance <= 0 || exploringCell.type == CellType.MOUNTAIN) {
-        exploringCell.highlighted = true;
-        ExplorableCells.remove(0);
+      if (exploringDistance <= 0 || (exploringCell.type == CellType.MOUNTAIN && !selectedCharacter.flying)) {
+        if (!accessibleTiles.contains(exploringCell)) {
+          accessibleTiles.add(exploringCell);
+          exploringCell.highlighted = true;
+        }
       } else {
         ArrayList<MapCell> neighborCells = getNeighborCells(exploringCell.idX, exploringCell.idY);
 
         for (MapCell cell : neighborCells) {
           if (!cell.highlighted && (cell.type != CellType.MOUNTAIN || selectedCharacter.flying )) {
-            ExplorableCells.add(new Exploration(cell, exploringDistance-1));
+            if (selectedCharacter.flying || findCharAtCoordinates(cell.idX, cell.idY) == null) { // can go over enemy character if flying
+              ExplorableCells.add(new Exploration(cell, exploringDistance-1));
+            }
           }
         }
-        exploringCell.highlighted = true;
-        ExplorableCells.remove(0);
+        if (!accessibleTiles.contains(exploringCell)) {
+          accessibleTiles.add(exploringCell);
+          exploringCell.highlighted = true;
+        }
       }
+      ExplorableCells.remove(0);
     }
   }
 
+  void highlightAttackableTiles() {
+    ArrayList<Exploration> ExplorableCells = new ArrayList<Exploration>();
+    charactersInRange = new ArrayList<Character>();
+
+    // Add initial cell in the explorationList
+    ExplorableCells.add(new Exploration(tiles[selectedCharacter.fieldPosY][selectedCharacter.fieldPosX], selectedCharacter.getCurrentToolRange()));
+
+    // Explore cells one by one
+    while (!ExplorableCells.isEmpty()) {
+      // Get current cell and distance left with characters if any
+      MapCell exploringCell = ExplorableCells.get(0).cell;
+      int exploringDistance = ExplorableCells.get(0).distance;
+      Character exploringChar = findCharAtCoordinates(exploringCell.idX, exploringCell.idY);
+
+      // If distance is 0 don't explore more cells
+      if (exploringDistance <= 0) {
+        exploringCell.attackRange = true;
+        if (exploringChar != null && !charactersInRange.contains(exploringChar)) {
+          charactersInRange.add(exploringChar);
+        }
+      } else { // If distance is not 0, explore neighbor cells
+        ArrayList<MapCell> neighborCells = getNeighborCells(exploringCell.idX, exploringCell.idY);
+
+        for (MapCell cell : neighborCells) {
+          if (!cell.attackRange) {
+            ExplorableCells.add(new Exploration(cell, exploringDistance-1));
+          }
+        }
+        exploringCell.attackRange = true;
+        if (exploringChar != null  && !charactersInRange.contains(exploringChar)) {
+          charactersInRange.add(exploringChar);
+        }
+      }
+      ExplorableCells.remove(0);
+    }
+    charactersInRange.remove(selectedCharacter);
+    tiles[selectedCharacter.fieldPosY][selectedCharacter.fieldPosX].attackRange = false;
+
+    println("Targetable characters :");
+    for (Character c : charactersInRange) {
+      println(c.name);
+    }
+    println();
+  }
+
   void unHighlightAccessibleTiles() {
+    for (MapCell cell :accessibleTiles){
+      cell.highlighted = false;
+    }
+  }
+
+  void unHighlightAttackableTiles() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-        tiles[i][j].highlighted = false;
+        tiles[i][j].attackRange = false;
       }
     }
   }
 
   void moveSelectedCharacter(int tileX, int tileY) {
-    println("Moving ", selectedCharacter.name, " from (", selectedCharacter.fieldPosX, ',', selectedCharacter.fieldPosX, ") to (", tileX, ',', tileY, ")");
+    println("Moving ", selectedCharacter.name, " from (", selectedCharacter.fieldPosX, ',', selectedCharacter.fieldPosY, ") to (", tileX, ',', tileY, ")");
     if (selectedCharacter == null)
       return;
 
@@ -147,16 +212,21 @@ class World {
       return;
 
     selectedCharacter.newPosition(tileX, tileY);
+    unHighlightAttackableTiles();
+    highlightAttackableTiles();
   }
 
   void endTurn() {
     currentState = WorldMenuState.Idle;
+    unHighlightAccessibleTiles();
+    unHighlightAttackableTiles();
+    moveCiaoRandomSpace();
     println("Going to state : Idle");
   }
 
   void mousePressed() {
     if (mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h) {
-      if (mouseX - x < w) {
+      if (mouseX - x < w && mouseY - y < h ) {
         currentState = WorldMenuState.Idle;
         unHighlightAccessibleTiles();
         println("Going to state : Idle");
@@ -172,14 +242,12 @@ class World {
     case Idle:
       selectedCharacter = findCharAtCoordinates(cellX, cellY);
 
-      if (selectedCharacter == null)
-        break;
-
-      if (!selectedCharacter.isHero)
+      if (selectedCharacter == null || !selectedCharacter.isHero)
         break;
 
       currentState = WorldMenuState.playerSelected;
       highlightAccessibleTiles();
+      highlightAttackableTiles();
       println("Going to state : playerSelected");
 
       break;
@@ -205,6 +273,22 @@ class World {
 
     default:
       println("default");
+    }
+  }
+
+  void moveCiaoRandomSpace() {
+    selectedCharacter = null;
+    for (Character c : characters ) {
+      if (c.name == "Ciao") {
+        selectedCharacter = c;
+      }
+    }
+    if (selectedCharacter != null) {
+      highlightAccessibleTiles();
+      int randomIndex = random.nextInt(accessibleTiles.size());
+      MapCell randomAccessibleCell = accessibleTiles.get(randomIndex);
+      moveSelectedCharacter(randomAccessibleCell.idX,randomAccessibleCell.idY);
+      unHighlightAccessibleTiles();
     }
   }
 
@@ -234,9 +318,6 @@ class World {
       break;
 
     case playerSelected:
-      //moveCharacter(cellX, cellY);
-      //fillEnemiesInRange(); // Check if there're enemies next to the new position
-      //moveToNextState();
       break;
 
     case WaitingForPlayerAction:

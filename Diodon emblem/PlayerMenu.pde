@@ -50,6 +50,23 @@ public class PlayerMenu {
     if (selectedIndex >= menuItems.size())
       selectedIndex = 0;
   }
+  
+  String getSelection(){
+    if (!cursorInsideMenu() || selectedIndex >= menuItems.size()) {
+      return "None";
+    }
+    return(menuItems.get(selectedIndex));
+  }
+  
+  void mousePressed(){
+    String select = getSelection();
+    if (cursorInsideMenu()){
+      println("User pressed ",select);
+      if (select == "End turn"){
+        world.endTurn();
+      }
+    }
+  }
 
   boolean cursorInsideMenu() {
     return !(mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h);

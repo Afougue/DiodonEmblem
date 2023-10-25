@@ -1,5 +1,6 @@
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.Random;
 
 World         world;
 BattleManager battleManager;
@@ -12,16 +13,17 @@ void setup () {
   size(640, 640);
 
   characters = new ArrayList<>();
-  var c = new Character("Manu", true, 20, 5, 3);
+  var c = new Character("Manu", true, 20, 5, 3, false);
   c.newPosition(2, 3);
-  var c2 = new Character("Ciao", false, 15, 7, 2);
+  var c2 = new Character("Ciao", false, 15, 7, 2, true);
   c2.newPosition(5, 3);
 
-  ArrayList<Tool> cTools = new ArrayList<>(Arrays.asList(new Weapon("Couteau", 5, 1), new Weapon("Épée", 10, 1)));
-  ArrayList<Tool> c2Tools = new ArrayList<>(Arrays.asList(new Weapon("Épingle", 2, 1), new Weapon("Massue", 7, 1)));
+  ArrayList<Tool> cTools = new ArrayList<>(Arrays.asList(new Weapon("Couteau", 5, 1), new Weapon("Épée", 10, 2)));
+  ArrayList<Tool> c2Tools = new ArrayList<>(Arrays.asList(new Weapon("Épingle", 2, 1), new Weapon("Massue", 7, 2)));
 
   c.tools = cTools;
   c2.tools = c2Tools;
+  c.toolSelectedIndex = 0;
 
   characters.add(c);
   characters.add(c2);
@@ -54,9 +56,9 @@ void  draw() {
 }
 
 void update() {
-  boolean enableMenus = world.currentState == WorldMenuState.WaitingForPlayerAction;
+  boolean enableMenus = (world.currentState == WorldMenuState.WaitingForPlayerAction) || (world.currentState == WorldMenuState.playerSelected);
 
-  playerMenu.enable = enableMenus;
+  playerMenu.enable = enableMenus || (world.currentState == WorldMenuState.Idle);
   inventoryMenu.enable = enableMenus;
 
   inventoryMenu.currentChar = world.selectedCharacter;
@@ -64,7 +66,8 @@ void update() {
 
 void mousePressed() {
   world.mousePressed();
-
+  playerMenu.mousePressed();
+  
   if (battleManager.batteling) {
     battleManager.play();
   }
@@ -73,7 +76,7 @@ void mousePressed() {
     battleManager.startBattle(characters.get(0), characters.get(1));
   }
 
-  if (playerMenu.selectedIndex == 1 && !battleManager.batteling && world.currentState == WorldMenuState.WaitingForPlayerAction) {
+  if (playerMenu.selectedIndex == 1 && !battleManager.batteling) {
     world.endTurn();
     playerMenu.selectedIndex = 0;
   }
