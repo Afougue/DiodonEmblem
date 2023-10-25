@@ -23,7 +23,7 @@ void setup () {
 
   c.tools = cTools;
   c2.tools = c2Tools;
-  c.toolSelectedIndex = 0;
+  c.selectedToolIndex = 0;
 
   characters.add(c);
   characters.add(c2);
@@ -65,12 +65,17 @@ void update() {
 }
 
 void mousePressed() {
-  world.mousePressed();
-  playerMenu.mousePressed();
-  
   if (battleManager.batteling) {
     battleManager.play();
+    return;
   }
+
+  world.mousePressed();
+  if (inventoryMenu.enable)
+    inventoryMenu.mousePressed();
+
+  if (playerMenu.enable)
+    playerMenu.mousePressed();
 
   if (playerMenu.selectedIndex == 0 && playerMenu.cursorInsideMenu() && !battleManager.batteling) {
     battleManager.startBattle(characters.get(0), characters.get(1));

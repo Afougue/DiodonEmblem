@@ -1,7 +1,5 @@
 class InventoryMenu {
-
   Character currentChar;
-  int currentToolIndex = -1;
   int currentOveringToolIndex = -1;
 
   // Variables to draw on screen
@@ -32,6 +30,13 @@ class InventoryMenu {
     return !(mouseX - x < 0 || mouseX - x > w || mouseY - y < 0 || mouseY - y > h);
   }
 
+  void mousePressed() {
+    if (currentChar == null || currentOveringToolIndex == -1)
+      return;
+      
+      currentChar.selectedToolIndex = currentOveringToolIndex;
+  }
+
   void draw() {
     fill(enable ? color(255, 255, 255) : color(200, 200, 200));
     rect(x, y, w, h);
@@ -41,7 +46,7 @@ class InventoryMenu {
 
     noStroke();
     drawCurrentOveringItemIndexBackground();
-    //drawCurrentItemIndexBackground();
+    drawCurrentItemIndexBackground();
     stroke(0);
     drawCurrentCharInv();
   }
@@ -66,11 +71,11 @@ class InventoryMenu {
   }
 
   void drawCurrentItemIndexBackground() {
-    if (currentToolIndex >= currentChar.tools.size())
+     if (currentChar == null || currentChar.selectedToolIndex == -1 || currentChar.selectedToolIndex >= currentChar.tools.size())
       return;
 
     fill(130, 200, 255, 128);
-    rect(x + 5 + offsetX * currentToolIndex, y + 30, offsetX, h - 10);
+    rect(x + 3 + offsetX * currentChar.selectedToolIndex, y + 3, offsetX - 3, h - 6);
   }
 
   void drawCurrentOveringItemIndexBackground() {
@@ -79,10 +84,5 @@ class InventoryMenu {
 
     fill(190, 230, 255, 128);
     rect(x + 3 + offsetX * currentOveringToolIndex, y + 3, offsetX - 3, h - 6);
-  }
-  
-  void mousePressed(){
-    
-    
   }
 }

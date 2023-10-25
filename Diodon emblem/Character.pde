@@ -5,7 +5,7 @@ public class Character {
   boolean flying = false;
 
   ArrayList<Tool> tools;
-  int toolSelectedIndex = -1;
+  int selectedToolIndex = -1;
 
   // Display variables
   int fieldPosX, fieldPosY;
@@ -47,10 +47,10 @@ public class Character {
   }
   
   int getCurrentToolRange(){
-    if (toolSelectedIndex == -1){
+    if (selectedToolIndex == -1){
       return 0;
     }
-    return tools.get(toolSelectedIndex).range;
+    return tools.get(selectedToolIndex).range;
   }
   
   
