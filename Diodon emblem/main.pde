@@ -83,7 +83,6 @@ void mousePressed() {
 
   if (playerMenu.selectedIndex == 1 && !battleManager.batteling) {
     world.endTurn();
-    playerMenu.selectedIndex = 0;
   }
 
   println("");
