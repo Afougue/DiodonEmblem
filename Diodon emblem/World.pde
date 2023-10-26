@@ -23,9 +23,9 @@ class World {
 
   ArrayList<Character> characters;
 
-  ArrayList<MapCell> accessibleTiles; // can be used to greately optimise the code later
-  ArrayList<MapCell> attackableTiles; // can be used to greately optimise the code later
-  ArrayList<Character> charactersInRange; // Used
+  ArrayList<MapCell> accessibleTiles;
+  ArrayList<MapCell> attackableTiles;
+  ArrayList<Character> charactersInRange;
   Random random = new Random();
   
   Character selectedCharacter = null;
@@ -53,6 +53,7 @@ class World {
     characters = chars;
     charactersInRange = new ArrayList<>();
     accessibleTiles = new ArrayList<>();
+    attackableTiles = new ArrayList<>();
     
     // generating map (for now empty grassy terrain)
     tileHeight = h / cols;
@@ -145,7 +146,8 @@ class World {
 
   void highlightAttackableTiles() {
     ArrayList<Exploration> ExplorableCells = new ArrayList<Exploration>();
-    charactersInRange = new ArrayList<Character>();
+    attackableTiles = new ArrayList<>();
+    charactersInRange = new ArrayList<>();
 
     // Add initial cell in the explorationList
     ExplorableCells.add(new Exploration(tiles[selectedCharacter.fieldPosY][selectedCharacter.fieldPosX], selectedCharacter.getCurrentToolRange()));
@@ -157,27 +159,36 @@ class World {
       int exploringDistance = ExplorableCells.get(0).distance;
       Character exploringChar = findCharAtCoordinates(exploringCell.idX, exploringCell.idY);
 
-      // If distance is 0 don't explore more cells
+      // If distance is 0 validate the current cell
       if (exploringDistance <= 0) {
         exploringCell.attackRange = true;
-        if (exploringChar != null && !charactersInRange.contains(exploringChar)) {
+        if(!attackableTiles.contains(exploringCell)){
+          attackableTiles.add(exploringCell);
+        }
+        if (exploringChar != null && ! charactersInRange.contains(exploringChar)) {
           charactersInRange.add(exploringChar);
         }
-      } else { // If distance is not 0, explore neighbor cells
+      } else { 
+        // Add neighbor cell to be explored
         ArrayList<MapCell> neighborCells = getNeighborCells(exploringCell.idX, exploringCell.idY);
-
         for (MapCell cell : neighborCells) {
           if (!cell.attackRange) {
             ExplorableCells.add(new Exploration(cell, exploringDistance-1));
           }
         }
+        
+        //Validate the current cell
         exploringCell.attackRange = true;
-        if (exploringChar != null  && !charactersInRange.contains(exploringChar)) {
+        if(!attackableTiles.contains(exploringCell)){
+          attackableTiles.add(exploringCell);
+        }
+        if (exploringChar != null && !charactersInRange.contains(exploringChar)) {
           charactersInRange.add(exploringChar);
         }
       }
       ExplorableCells.remove(0);
     }
+    // Can a character target itself ? 
     charactersInRange.remove(selectedCharacter);
     tiles[selectedCharacter.fieldPosY][selectedCharacter.fieldPosX].attackRange = false;
 
@@ -192,14 +203,15 @@ class World {
     for (MapCell cell :accessibleTiles){
       cell.highlighted = false;
     }
+    accessibleTiles.clear();
   }
 
   void unHighlightAttackableTiles() {
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
-        tiles[i][j].attackRange = false;
-      }
+    for (MapCell cell :attackableTiles){
+      cell.attackRange = false;
     }
+    attackableTiles.clear();
+    charactersInRange.clear();
   }
 
   void moveSelectedCharacter(int tileX, int tileY) {
@@ -289,6 +301,13 @@ class World {
       MapCell randomAccessibleCell = accessibleTiles.get(randomIndex);
       moveSelectedCharacter(randomAccessibleCell.idX,randomAccessibleCell.idY);
       unHighlightAccessibleTiles();
+    }
+  }
+  
+  void updateCharacterRange(Character c){
+    if (c == selectedCharacter){
+      unHighlightAttackableTiles();
+      highlightAttackableTiles();
     }
   }
 

@@ -33,8 +33,7 @@ class InventoryMenu {
   void mousePressed() {
     if (currentChar == null || currentOveringToolIndex == -1)
       return;
-      
-      currentChar.selectedToolIndex = currentOveringToolIndex;
+      currentChar.switchTool(currentOveringToolIndex);
   }
 
   void draw() {

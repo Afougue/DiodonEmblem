@@ -2,6 +2,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Random;
 
+
 World         world;
 BattleManager battleManager;
 PlayerMenu    playerMenu;
@@ -23,13 +24,14 @@ void setup () {
 
   c.tools = cTools;
   c2.tools = c2Tools;
-  c.selectedToolIndex = 0;
 
   characters.add(c);
   characters.add(c2);
 
   battleManager = new BattleManager(width * 0.1, height * 0.1, height * 0.8, width * 0.8);
   world = new World(8, 8, 100, 50, 400, 400, characters);
+  
+  c.switchTool(0); // needs to be called after world creation for now 
   playerMenu = new PlayerMenu(world.x + world.w + 10, // Place the playerMenu next to the fieldManager
     world.y,
     world.h,

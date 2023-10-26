@@ -26,6 +26,11 @@ public class Character {
     fieldPosX = 0;
     fieldPosY = 0;
   }
+  
+  void switchTool(int idTool){
+    selectedToolIndex = idTool;
+    world.updateCharacterRange(this);
+  }
 
   int damage() {
     return strength;
