@@ -1,7 +1,7 @@
 public class Character {
   String name;
   int hpMax, hp, strength, speed;
-  boolean isHero = false;
+  boolean isBlue = false;
   boolean flying = false;
 
   ArrayList<Tool> tools;
@@ -14,11 +14,11 @@ public class Character {
   float hoverStep = 0.1;
   
 
-  public Character(String name, boolean hero, int hp, int str, int spd, boolean fly) {
+  public Character(String name, boolean blue, int hp, int str, int spd, boolean fly) {
     this.name = name;
     hpMax = this.hp = hp;
 
-    isHero = hero;
+    isBlue = blue;
     strength = str;
     speed = spd;
     flying = fly;
@@ -42,7 +42,7 @@ public class Character {
   }
 
   void draw(float x, float y, float w, float h, float cols, float rows) {
-    fill(isHero ? color(0, 0, 255) : color(255, 0, 0));
+    fill(isBlue ? color(0, 0, 255) : color(255, 0, 0));
     
     hoverY += hoverStep;
     if (hoverY > 10 || hoverY < 0) hoverStep *= -1;

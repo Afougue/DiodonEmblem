@@ -259,7 +259,7 @@ class World {
       selectedCharacter = targetedChar;
 
       // For now can't select enemy characters
-      if (selectedCharacter == null || !selectedCharacter.isHero)
+      if (selectedCharacter == null || !selectedCharacter.isBlue)
         break;
 
       currentState = WorldMenuState.playerSelected;
@@ -272,12 +272,16 @@ class World {
     case playerSelected:
       if (selectedCell.highlighted) { // If cell is accessible by character
         moveSelectedCharacter(cellX, cellY);
-        currentState = WorldMenuState.WaitingForPlayerAction;
-        println("Going to state : WaitingForPlayerAction");
       } else {
         println("Cell too far");
         currentState = WorldMenuState.Idle;
         println("Going to state : Idle");
+      }
+      
+      if (targetedChar != null && charactersInRange.contains(targetedChar)){
+        println("Starting battle between",selectedCharacter.name,"and",targetedChar.name);
+        battleManager.startBattle(selectedCharacter,targetedChar);
+        
       }
 
       unHighlightAccessibleTiles();
