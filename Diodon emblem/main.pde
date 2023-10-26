@@ -2,7 +2,6 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Random;
 
-
 World         world;
 BattleManager battleManager;
 PlayerMenu    playerMenu;

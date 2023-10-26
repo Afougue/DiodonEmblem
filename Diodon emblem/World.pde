@@ -20,7 +20,7 @@ class World {
   float tileHeight;
   float tileWidth;
   MapCell[][] tiles;
-
+  
   ArrayList<Character> characters;
 
   ArrayList<MapCell> accessibleTiles;
@@ -34,6 +34,9 @@ class World {
   // Display variables
   int x, y, h, w;
   int nbRows = 8, nbCols = 8;
+  boolean enable = true;
+  PImage fightCursor = loadImage("data/cursor/mouseCursor.png");
+
 
   WorldMenuState currentState = WorldMenuState.Idle;
 
@@ -248,12 +251,14 @@ class World {
 
     int cellX = (int)((mouseX - x) / (float)w * nbRows);
     int cellY = (int)((mouseY - y) / (float)h * nbCols);
+    Character targetedChar = findCharAtCoordinates(cellX,cellY);
     selectedCell = tiles[cellY][cellX];
 
     switch(currentState) {
     case Idle:
-      selectedCharacter = findCharAtCoordinates(cellX, cellY);
+      selectedCharacter = targetedChar;
 
+      // For now can't select enemy characters
       if (selectedCharacter == null || !selectedCharacter.isHero)
         break;
 
@@ -286,6 +291,8 @@ class World {
     default:
       println("default");
     }
+    
+    
   }
 
   void moveCiaoRandomSpace() {
@@ -312,11 +319,7 @@ class World {
   }
 
   void draw() {
-    boolean ret = false;
-
-    if (ret)
-      return;
-
+    
     float tileX = x;
     float tileY = y;
     for (int i = 0; i < rows; i++) {
@@ -330,6 +333,16 @@ class World {
 
     for (var c : characters) {
       c.draw(x, y, w, h, cols, rows);
+    }
+    
+    int mouseTileX = (int)((mouseX - x) / (float)w * nbRows);
+    int mouseTileY = (int)((mouseY - y) / (float)h * nbCols);
+    Character targetedChar = findCharAtCoordinates(mouseTileX,mouseTileY);
+    if (targetedChar != null && charactersInRange.contains(targetedChar)){
+      noCursor();
+      image(fightCursor, mouseX - fightCursor.width/2, mouseY - fightCursor.height/2);
+    }else{
+      cursor();
     }
 
     switch(currentState) {
