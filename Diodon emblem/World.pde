@@ -292,8 +292,10 @@ class World {
           unHighlightAccessibleTiles();
           
           selectedCharacter = targetedChar;
-          highlightAccessibleTiles();
-          highlightAttackableTiles();
+          if(!selectedCharacter.hasMoved)
+            highlightAccessibleTiles();
+          if(!selectedCharacter.hasAttacked)
+            highlightAttackableTiles();
           currentState = WorldMenuState.PlayerSelected;
           println("Going to state : Idle");
           break;
@@ -314,15 +316,15 @@ class World {
         // If targeting a character
         if(targetedChar != null){
           
-          // If allied character switch to him
+          // If allied character switch view to him
           if(targetedChar.isBlue){
             unHighlightAttackableTiles();
             unHighlightAccessibleTiles();
             selectedCharacter = targetedChar;
             if (!selectedCharacter.hasMoved)
-              highlightAttackableTiles();
-            if (!selectedCharacter.hasAttacked)
               highlightAccessibleTiles();
+            if (!selectedCharacter.hasAttacked)
+              highlightAttackableTiles();
             break;
           }else{
             // If not allied
