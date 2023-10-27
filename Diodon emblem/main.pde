@@ -8,9 +8,12 @@ PlayerMenu    playerMenu;
 InventoryMenu inventoryMenu;
 
 ArrayList<Character> characters;
+PImage icon;
 
 void setup () {
   size(640, 640);
+  icon = loadImage("data/cursor/mouseCursor.png");
+  surface.setIcon(icon);
 
   characters = new ArrayList<>();
   var c = new Character("Manu", true, 20, 5, 3, false);
