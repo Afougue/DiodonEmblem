@@ -17,23 +17,30 @@ void setup () {
 
   characters = new ArrayList<>();
   var c = new Character("Manu", true, 20, 5, 3, false);
+  var cBob = new Character("Bob", true, 20, 2, 4, true);
   c.newPosition(2, 3);
+  cBob.newPosition(2,4);
   var c2 = new Character("Ciao", false, 15, 7, 2, true);
   c2.newPosition(5, 3);
 
+  ArrayList<Tool> cBobTools = new ArrayList<>(Arrays.asList(new Weapon("Plume", 0, 1), new Weapon("Arc", 1, 4)));
   ArrayList<Tool> cTools = new ArrayList<>(Arrays.asList(new Weapon("Couteau", 5, 1), new Weapon("Épée", 10, 2)));
   ArrayList<Tool> c2Tools = new ArrayList<>(Arrays.asList(new Weapon("Épingle", 2, 1), new Weapon("Massue", 7, 2)));
 
   c.tools = cTools;
   c2.tools = c2Tools;
+  cBob.tools = cBobTools;
 
   characters.add(c);
+  characters.add(cBob);
   characters.add(c2);
+  
 
   battleManager = new BattleManager(width * 0.1, height * 0.1, height * 0.8, width * 0.8);
   world = new World(8, 8, 100, 50, 400, 400, characters);
   
   c.switchTool(0); // needs to be called after world creation for now 
+  cBob.switchTool(0);
   playerMenu = new PlayerMenu(world.x + world.w + 10, // Place the playerMenu next to the fieldManager
     world.y,
     world.h,
@@ -60,7 +67,7 @@ void  draw() {
 }
 
 void update() {
-  boolean enableMenus = (world.currentState == WorldMenuState.WaitingForPlayerAction) || (world.currentState == WorldMenuState.playerSelected);
+  boolean enableMenus = (world.currentState == WorldMenuState.WaitingForPlayerAction) || (world.currentState == WorldMenuState.PlayerSelected);
 
   playerMenu.enable = enableMenus || (world.currentState == WorldMenuState.Idle);
   inventoryMenu.enable = enableMenus;

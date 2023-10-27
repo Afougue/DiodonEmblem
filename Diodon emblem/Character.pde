@@ -6,6 +6,10 @@ public class Character {
 
   ArrayList<Tool> tools;
   int selectedToolIndex = -1;
+  
+  // Map actions variable
+  boolean hasAttacked;
+  boolean hasMoved;
 
   // Display variables
   int fieldPosX, fieldPosY;
@@ -22,6 +26,9 @@ public class Character {
     strength = str;
     speed = spd;
     flying = fly;
+    
+    hasAttacked = false;
+    hasMoved = false;
 
     fieldPosX = 0;
     fieldPosY = 0;
