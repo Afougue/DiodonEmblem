@@ -1,4 +1,5 @@
 import java.util.Optional;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -10,6 +11,12 @@ InventoryMenu inventoryMenu;
 ArrayList<Character> characters;
 PImage icon;
 
+enum PlayerMenuAction {
+  None,
+    Fight,
+    EndTurn
+}
+
 void setup () {
   size(640, 640);
   icon = loadImage("data/cursor/mouseCursor.png");
@@ -19,7 +26,7 @@ void setup () {
   var c = new Character("Manu", true, 20, 5, 3, false);
   var cBob = new Character("Bob", true, 20, 2, 4, true);
   c.newPosition(2, 3);
-  cBob.newPosition(2,4);
+  cBob.newPosition(2, 4);
   var c2 = new Character("Ciao", false, 15, 7, 2, true);
   c2.newPosition(5, 3);
 
@@ -34,12 +41,12 @@ void setup () {
   characters.add(c);
   characters.add(cBob);
   characters.add(c2);
-  
+
 
   battleManager = new BattleManager(width * 0.1, height * 0.1, height * 0.8, width * 0.8);
   world = new World(8, 8, 100, 50, 400, 400, characters);
-  
-  c.switchTool(0); // needs to be called after world creation for now 
+
+  c.switchTool(0); // needs to be called after world creation for now
   cBob.switchTool(0);
   playerMenu = new PlayerMenu(world.x + world.w + 10, // Place the playerMenu next to the fieldManager
     world.y,
@@ -70,6 +77,7 @@ void update() {
   boolean enableMenus = (world.currentState == WorldMenuState.WaitingForPlayerAction) || (world.currentState == WorldMenuState.PlayerSelected);
 
   playerMenu.enable = enableMenus || (world.currentState == WorldMenuState.Idle);
+  playerMenu.allowFight = world.charactersInRange.size() > 0;
   inventoryMenu.enable = enableMenus;
 
   inventoryMenu.currentChar = world.selectedCharacter;
@@ -88,12 +96,26 @@ void mousePressed() {
   if (playerMenu.enable)
     playerMenu.mousePressed();
 
-  if (playerMenu.selectedIndex == 0 && playerMenu.cursorInsideMenu() && !battleManager.batteling) {
-    battleManager.startBattle(characters.get(0), characters.get(1));
-  }
+  if (battleManager.batteling)
+    return;
+    
+  if (!playerMenu.enable)
+    return;
 
-  if (playerMenu.selectedIndex == 1 && !battleManager.batteling) {
+  switch(playerMenu.getPlayerMenuAction()) {
+  case None:
+    break;
+
+  case Fight:
+    battleManager.startBattle(characters.get(0), characters.get(1));
+    break;
+
+  case EndTurn:
     world.endTurn();
+    break;
+
+  default:
+    break;
   }
 
   println("");

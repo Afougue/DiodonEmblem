@@ -1,10 +1,9 @@
-import java.util.Arrays;
-
 public class PlayerMenu {
 
   final int nbLines = 10;
   private int selectedIndex = 0;
   boolean enable = false;
+  boolean allowFight = false;
 
   ArrayList<String> menuItems;
 
@@ -14,7 +13,7 @@ public class PlayerMenu {
   int cursorY1, cursorY2, cursorY3;
 
   public PlayerMenu(float x, float y, float h, float w) {
-    menuItems = new ArrayList<>(Arrays.asList("Figth", "End turn"));
+    menuItems = getMenuItemsList();
 
     this.x = (int)x;
     this.y = (int)y;
@@ -50,22 +49,46 @@ public class PlayerMenu {
     if (selectedIndex >= menuItems.size())
       selectedIndex = 0;
   }
-  
-  String getSelection(){
+
+  String getSelection() {
     if (!cursorInsideMenu() || selectedIndex >= menuItems.size()) {
       return "None";
     }
     return(menuItems.get(selectedIndex));
   }
-  
-  void mousePressed(){
-    String select = getSelection();
-    if (cursorInsideMenu()){
-      println("User pressed ",select);
-      if (select == "End turn"){
-        world.endTurn();
-      }
+
+
+  ArrayList getMenuItemsList() {
+    var list = new ArrayList<>(Arrays.asList("End turn"));
+
+    if (allowFight)
+      list.add(0, "Fight");
+
+    return list;
+  }
+
+  PlayerMenuAction getPlayerMenuAction() {
+    if (!cursorInsideMenu())
+      return PlayerMenuAction.None;
+
+    if (!enable)
+      return PlayerMenuAction.None;
+
+    if (selectedIndex == 1)
+      return PlayerMenuAction.EndTurn;
+
+    if (selectedIndex == 0) {
+      if (allowFight)
+        return PlayerMenuAction.Fight;
+      return PlayerMenuAction.EndTurn;
     }
+    
+    return PlayerMenuAction.None;
+  }
+
+
+  void mousePressed() {
+    
   }
 
   boolean cursorInsideMenu() {
@@ -74,30 +97,29 @@ public class PlayerMenu {
 
   void draw() {
     // BattleManager frame
-
     fill(enable ? color(255, 255, 255) : color(200, 200, 200));
     rect(x, y, w, h);
 
     if (!enable)
       return;
 
-    // Draw cursor
-    drawCursorAtIndex();
+    // Update text list
+    menuItems = getMenuItemsList();
 
     // Draw text underline
+    if(selectedIndex >= menuItems.size())
+      return;
+    
     noStroke();
     fill(color(255, 177, 74));
 
     final int maxTextChar = 8;
     int currentTextChar = menuItems.get(selectedIndex).length();
-    //String currentText = menuItems.get(selectedIndex);
-    //int currentTextChar = currentText.size();
 
     rect(x + 10, y + 35 + h/nbLines * selectedIndex,
       (w - 20) * (float)currentTextChar / maxTextChar, 3);
 
     stroke(0);
-    fill(color(255, 255, 255));
 
     // Draw texts
     textSize(30);
@@ -107,5 +129,8 @@ public class PlayerMenu {
     for (var s : menuItems) {
       text(s, x + 5, y + 30 + h/nbLines * i++);
     }
+
+    // Draw cursor
+    drawCursorAtIndex();
   }
 }
