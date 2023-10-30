@@ -23,28 +23,35 @@ void setup () {
   surface.setIcon(icon);
 
   characters = new ArrayList<>();
-  var c = new Character("Manu", true, 20, 5, 3, false);
-  var cBob = new Character("Bob", true, 20, 2, 4, true);
+  var c = new Character("Manu", true, 20, 5, 16, false);
+  var cBob = new Character("Bob", true, 20, 2, 2, true);
   c.newPosition(2, 3);
   cBob.newPosition(2, 4);
-  var c2 = new Character("Ciao", false, 15, 7, 2, true);
+  var c2 = new Character("Ciao", false, 15, 7, 3, true);
+  var c3 = new Character("Lennon", false, 10, 20, 1, false);
   c2.newPosition(5, 3);
+  c3.newPosition(5,4);
 
   ArrayList<Tool> cBobTools = new ArrayList<>(Arrays.asList(new Weapon("Plume", 0, 1), new Weapon("Arc", 1, 4)));
   ArrayList<Tool> cTools = new ArrayList<>(Arrays.asList(new Weapon("Couteau", 5, 1), new Weapon("Épée", 10, 2)));
   ArrayList<Tool> c2Tools = new ArrayList<>(Arrays.asList(new Weapon("Épingle", 2, 1), new Weapon("Massue", 7, 2)));
+  ArrayList<Tool> c3Tools = new ArrayList<>(Arrays.asList(new Weapon("La Hache du Pyrobarbare", 2, 1), new Weapon("Massue", 7, 2)));
 
   c.tools = cTools;
   c2.tools = c2Tools;
   cBob.tools = cBobTools;
+  c3.tools = c3Tools;
 
   characters.add(c);
   characters.add(cBob);
   characters.add(c2);
+  characters.add(c3);
 
 
   battleManager = new BattleManager(width * 0.1, height * 0.1, height * 0.8, width * 0.8);
-  world = new World(8, 8, 100, 50, 400, 400, characters);
+  int rows = 8;
+  int cols = 8;
+  world = new World(rows, cols, 100, 50, 400, 400, characters);
 
   c.switchTool(0); // needs to be called after world creation for now
   cBob.switchTool(0);
@@ -81,6 +88,28 @@ void update() {
   inventoryMenu.enable = enableMenus;
 
   inventoryMenu.currentChar = world.selectedCharacter;
+}
+
+
+void keyPressed(){
+  //print(key);
+  world.endTurn();
+  if (key == 'q' || key == 'Q') {
+  }
+  if (key == 's' || key == 'S') {
+  }
+  if (key == 'a' || key == 'A') {
+  }
+  if (key == 'z' || key == 'Z') {
+  }
+  if (key == 'e' || key == 'E') {
+  }
+  if (key == 'r' || key == 'R') {
+  }
+  if (key == 't' || key == 'T') {
+  }
+  if (key == 'y' || key == 'Y') {
+  }
 }
 
 void mousePressed() {

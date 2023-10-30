@@ -12,6 +12,9 @@ class MapCell {
   boolean attackRange = false;
   int idX;
   int idY;
+  float lastX = 0;
+  float lastY = 0;
+  MapCell previous = null;
 
   MapCell(CellType tileType, float w, float h, int ix, int iy) {
     type = tileType;
@@ -22,8 +25,21 @@ class MapCell {
     idX = ix;
     idY = iy;
   }
+  
+  void displayPoint(){
+    fill(255,200);
+    ellipse(lastX + tileWidth/2, lastY + tileHeight/2, 10, 10);
+    if (previous != null){
+      float midX = (lastX + tileWidth/2 + previous.lastX + tileWidth/2)/2;
+      float midY = (lastY + tileHeight/2 + previous.lastY + tileHeight/2)/2;
+      ellipse(midX, midY, 10, 10);
+      previous.displayPoint();
+    }
+  }
 
   void draw(float x, float y) {
+    lastX = x;
+    lastY = y;
     color c = color(0, 0, 0);
     switch(type) {
     case GRASS:

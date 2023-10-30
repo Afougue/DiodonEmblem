@@ -12,28 +12,27 @@ class Exploration {
 
 
 public enum WorldMenuState {
-  Idle, PlayerSelected, EnemySelected, MovingChar, WaitingForPlayerAction, EndTurn, emptyCellSelected, 
+  Idle, PlayerSelected, EnemySelected, MovingChar, WaitingForPlayerAction, EndTurn, emptyCellSelected,
 }
 
 class World {
-  int rows, cols;
   float tileHeight;
   float tileWidth;
   MapCell[][] tiles;
-  
+
   ArrayList<Character> characters;
 
   ArrayList<MapCell> accessibleTiles;
   ArrayList<MapCell> attackableTiles;
   ArrayList<Character> charactersInRange;
   Random random = new Random();
-  
+
   Character selectedCharacter = null;
   MapCell selectedCell = null;
 
   // Display variables
-  int x, y, h, w;
-  int nbRows = 8, nbCols = 8;
+  float x, y, h, w;
+  int nbRows, nbCols;
   boolean enable = true;
   PImage fightCursor = loadImage("data/cursor/mouseCursor.png");
 
@@ -42,14 +41,14 @@ class World {
 
   World(int rows, int cols, float x, float y, float h, float w, ArrayList<Character> chars) {
     // display position
-    this.x = (int)x;
-    this.y = (int)y;
-    this.h = (int)h;
-    this.w = (int)w;
+    this.x = x;
+    this.y = y;
+    this.h = h;
+    this.w = w;
 
     // Field informations
-    this.rows = rows;
-    this.cols = cols;
+    this.nbRows = rows;
+    this.nbCols = cols;
     this.tiles = new MapCell[rows][cols];
 
     // Characters informations
@@ -57,7 +56,7 @@ class World {
     charactersInRange = new ArrayList<>();
     accessibleTiles = new ArrayList<>();
     attackableTiles = new ArrayList<>();
-    
+
     // generating map (for now empty grassy terrain)
     tileHeight = h / cols;
     tileWidth = w / rows;
@@ -66,7 +65,6 @@ class World {
         float rand = random(1);
         if (rand > 0.8) {
           tiles[i][j] = new MapCell(CellType.MOUNTAIN, tileHeight, tileWidth, j, i);
-          
         } else {
           tiles[i][j] = new MapCell(CellType.GRASS, tileHeight, tileWidth, j, i);
         }
@@ -100,13 +98,13 @@ class World {
     if (x > 0) {// left
       neighborCells.add(tiles[y][x-1]);
     }
-    if (x < cols-1) {
+    if (x < nbCols-1) {
       neighborCells.add(tiles[y][x+1]);
     }
     if (y > 0) {
       neighborCells.add(tiles[y-1][x]);
     }
-    if (y < rows-1) {
+    if (y < nbRows-1) {
       neighborCells.add(tiles[y+1][x]);
     }
     return neighborCells;
@@ -134,6 +132,7 @@ class World {
         for (MapCell cell : neighborCells) {
           if (!cell.highlighted && (cell.type != CellType.MOUNTAIN || selectedCharacter.flying )) {
             if (selectedCharacter.flying || findCharAtCoordinates(cell.idX, cell.idY) == null) { // can go over enemy character if flying
+              cell.previous = exploringCell;
               ExplorableCells.add(new Exploration(cell, exploringDistance-1));
             }
           }
@@ -165,13 +164,13 @@ class World {
       // If distance is 0 validate the current cell
       if (exploringDistance <= 0) {
         exploringCell.attackRange = true;
-        if(!attackableTiles.contains(exploringCell)){
+        if (!attackableTiles.contains(exploringCell)) {
           attackableTiles.add(exploringCell);
         }
         if (exploringChar != null && ! charactersInRange.contains(exploringChar)) {
           charactersInRange.add(exploringChar);
         }
-      } else { 
+      } else {
         // Add neighbor cell to be explored
         ArrayList<MapCell> neighborCells = getNeighborCells(exploringCell.idX, exploringCell.idY);
         for (MapCell cell : neighborCells) {
@@ -179,10 +178,10 @@ class World {
             ExplorableCells.add(new Exploration(cell, exploringDistance-1));
           }
         }
-        
+
         //Validate the current cell
         exploringCell.attackRange = true;
-        if(!attackableTiles.contains(exploringCell)){
+        if (!attackableTiles.contains(exploringCell)) {
           attackableTiles.add(exploringCell);
         }
         if (exploringChar != null && !charactersInRange.contains(exploringChar)) {
@@ -191,7 +190,7 @@ class World {
       }
       ExplorableCells.remove(0);
     }
-    // Can a character target itself ? 
+    // Can a character target itself ?
     charactersInRange.remove(selectedCharacter);
     tiles[selectedCharacter.fieldPosY][selectedCharacter.fieldPosX].attackRange = false;
 
@@ -203,14 +202,15 @@ class World {
   }
 
   void unHighlightAccessibleTiles() {
-    for (MapCell cell :accessibleTiles){
+    for (MapCell cell : accessibleTiles) {
       cell.highlighted = false;
+      cell.previous = null;
     }
     accessibleTiles.clear();
   }
 
   void unHighlightAttackableTiles() {
-    for (MapCell cell :attackableTiles){
+    for (MapCell cell : attackableTiles) {
       cell.attackRange = false;
     }
     attackableTiles.clear();
@@ -230,10 +230,9 @@ class World {
     unHighlightAccessibleTiles();
     unHighlightAttackableTiles();
     moveCiaoRandomSpace();
-    for (var c : characters){
+    for (var c : characters) {
       c.hasMoved = false;
       c.hasAttacked =false;
-      
     }
     currentState = WorldMenuState.Idle;
     println("Going to state : Idle");
@@ -253,119 +252,117 @@ class World {
 
     int cellX = (int)((mouseX - x) / (float)w * nbRows);
     int cellY = (int)((mouseY - y) / (float)h * nbCols);
-    Character targetedChar = findCharAtCoordinates(cellX,cellY);
+    Character targetedChar = findCharAtCoordinates(cellX, cellY);
     selectedCell = tiles[cellY][cellX];
 
     switch(currentState) {
-      case Idle:
-        if (targetedChar == null)
-          break;
+    case Idle:
+      if (targetedChar == null)
+        break;
+      selectedCharacter = targetedChar;
+
+      if (selectedCharacter.isBlue) {
+        // For a playable char
+        if (!selectedCharacter.hasMoved)
+          highlightAccessibleTiles();
+        if (!selectedCharacter.hasAttacked)
+          highlightAttackableTiles();
+        currentState = WorldMenuState.PlayerSelected;
+        println("Going to state : playerSelected");
+        break;
+      } else {
+        // For an enemy char
+        highlightAccessibleTiles();
+        currentState = WorldMenuState.EnemySelected;
+        println("Going to state : playerSelected");
+        break;
+      }
+
+    case EnemySelected:
+      if (targetedChar == null) {
+        currentState = WorldMenuState.Idle;
+        println("Going to state : Idle");
+        unHighlightAccessibleTiles();
+        selectedCharacter = null;
+        break;
+      }
+
+      if (targetedChar.isBlue) {
+        unHighlightAccessibleTiles();
+
         selectedCharacter = targetedChar;
-          
-        if(selectedCharacter.isBlue){
-          // For a playable char
+        if (!selectedCharacter.hasMoved)
+          highlightAccessibleTiles();
+        if (!selectedCharacter.hasAttacked)
+          highlightAttackableTiles();
+        currentState = WorldMenuState.PlayerSelected;
+        println("Going to state : Idle");
+        break;
+      } else {
+        unHighlightAccessibleTiles();
+        selectedCharacter = targetedChar;
+        highlightAccessibleTiles();
+        break;
+      }
+
+    case PlayerSelected:
+      // Move if possible
+      if (selectedCell.highlighted && !selectedCharacter.hasMoved && targetedChar == null) { // Vérifier si problème en volant ?
+        moveSelectedCharacter(cellX, cellY);
+        break;
+      }
+
+      // If targeting a character
+      if (targetedChar != null) {
+
+        // If allied character switch view to him
+        if (targetedChar.isBlue) {
+          unHighlightAttackableTiles();
+          unHighlightAccessibleTiles();
+          selectedCharacter = targetedChar;
           if (!selectedCharacter.hasMoved)
             highlightAccessibleTiles();
           if (!selectedCharacter.hasAttacked)
-          highlightAttackableTiles();
-          currentState = WorldMenuState.PlayerSelected;
-          println("Going to state : playerSelected");
-          break;
-        }else{
-          // For an enemy char
-          highlightAccessibleTiles();
-          currentState = WorldMenuState.EnemySelected;
-          println("Going to state : playerSelected");
-          break;
-        }
-      
-      case EnemySelected:
-        if (targetedChar == null){
-          currentState = WorldMenuState.Idle;
-          println("Going to state : Idle");
-          unHighlightAccessibleTiles();
-          selectedCharacter = null;
-          break;
-        }
-        
-        if(targetedChar.isBlue){
-          unHighlightAccessibleTiles();
-          
-          selectedCharacter = targetedChar;
-          if(!selectedCharacter.hasMoved)
-            highlightAccessibleTiles();
-          if(!selectedCharacter.hasAttacked)
             highlightAttackableTiles();
-          currentState = WorldMenuState.PlayerSelected;
-          println("Going to state : Idle");
           break;
-        }else{
-          unHighlightAccessibleTiles();
-          selectedCharacter = targetedChar;
-          highlightAccessibleTiles();
-          break;
-        }
-  
-      case PlayerSelected:
-        // Move if possible
-        if (selectedCell.highlighted && !selectedCharacter.hasMoved && targetedChar == null) { // Vérifier si problème en volant ? 
-          moveSelectedCharacter(cellX, cellY);
-          break;
-        }
-        
-        // If targeting a character
-        if(targetedChar != null){
-          
-          // If allied character switch view to him
-          if(targetedChar.isBlue){
+        } else {
+          // If not allied
+
+          // If in range and can attack
+          if (charactersInRange.contains(targetedChar) && !selectedCharacter.hasAttacked) {
+            println("Starting battle between", selectedCharacter.name, "and", targetedChar.name);
+            battleManager.startBattle(selectedCharacter, targetedChar);
+            unHighlightAttackableTiles();
+            unHighlightAccessibleTiles();
+            selectedCharacter.hasMoved = true;
+            selectedCharacter.hasAttacked = true;
+            selectedCharacter = null;
+            currentState = WorldMenuState.Idle;
+            println("Going to state : Idle");
+            break;
+          } else {
+            // Else switch view to enemy
             unHighlightAttackableTiles();
             unHighlightAccessibleTiles();
             selectedCharacter = targetedChar;
-            if (!selectedCharacter.hasMoved)
-              highlightAccessibleTiles();
-            if (!selectedCharacter.hasAttacked)
-              highlightAttackableTiles();
+            highlightAccessibleTiles();
+            currentState = WorldMenuState.EnemySelected;
+            println("Going to state : playerSelected");
             break;
-          }else{
-            // If not allied
-            
-            // If in range and can attack
-            if (charactersInRange.contains(targetedChar) && !selectedCharacter.hasAttacked){
-              println("Starting battle between",selectedCharacter.name,"and",targetedChar.name);
-              battleManager.startBattle(selectedCharacter,targetedChar);
-              unHighlightAttackableTiles();
-              unHighlightAccessibleTiles();
-              selectedCharacter.hasMoved = true;
-              selectedCharacter.hasAttacked = true;
-              selectedCharacter = null;
-              currentState = WorldMenuState.Idle;
-              println("Going to state : Idle");
-              break;
-            }else{
-              // Else switch view to enemy
-              unHighlightAttackableTiles();
-              unHighlightAccessibleTiles();
-              selectedCharacter = targetedChar;
-              highlightAccessibleTiles();
-              currentState = WorldMenuState.EnemySelected;
-              println("Going to state : playerSelected");
-              break;
-            }
           }
         }
-        
-        // Finally return to idle if nothing should have had happenned
-        unHighlightAttackableTiles();
-        unHighlightAccessibleTiles();
-        selectedCharacter = null;
-        currentState = WorldMenuState.Idle;
-        println("Going to state : Idle");
-        
-      default:
-        println("default");
+      }
+
+      // Finally return to idle if nothing should have had happenned
+      unHighlightAttackableTiles();
+      unHighlightAccessibleTiles();
+      selectedCharacter = null;
+      currentState = WorldMenuState.Idle;
+      println("Going to state : Idle");
+
+    default:
+      println("default");
     }
-    
-    
   }
 
   void moveCiaoRandomSpace() {
@@ -379,24 +376,25 @@ class World {
       highlightAccessibleTiles();
       int randomIndex = random.nextInt(accessibleTiles.size());
       MapCell randomAccessibleCell = accessibleTiles.get(randomIndex);
-      moveSelectedCharacter(randomAccessibleCell.idX,randomAccessibleCell.idY);
+      moveSelectedCharacter(randomAccessibleCell.idX, randomAccessibleCell.idY);
       unHighlightAccessibleTiles();
     }
   }
-  
-  void updateCharacterRange(Character c){
-    if (c == selectedCharacter){
+
+  void updateCharacterRange(Character c) {
+    if (c == selectedCharacter) {
       unHighlightAttackableTiles();
       highlightAttackableTiles();
     }
   }
 
   void draw() {
-    
+
+    // TODO DO that an other way as tiles shouldn't really be updating theyr position ?
     float tileX = x;
     float tileY = y;
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
+    for (int i = 0; i < nbRows; i++) {
+      for (int j = 0; j < nbCols; j++) {
         tiles[i][j].draw(tileX, tileY);
         tileX += tileWidth;
       }
@@ -404,44 +402,52 @@ class World {
       tileX = x;
     }
 
-    for (var c : characters) {
-      c.draw(x, y, w, h, cols, rows);
-    }
-    
-    int mouseTileX = (int)((mouseX - x) / (float)w * nbRows);
-    int mouseTileY = (int)((mouseY - y) / (float)h * nbCols);
-    Character targetedChar = findCharAtCoordinates(mouseTileX,mouseTileY);
-    if (targetedChar != null && charactersInRange.contains(targetedChar) && !targetedChar.isBlue){
+    int mouseTileX = (int)(((mouseX - x) / (float)w) * nbRows);
+    int mouseTileY = (int)(((mouseY - y) / (float)h) * nbCols);
+    println("Mouse over :",mouseTileX," ",mouseTileY,nbCols,nbRows,w,h);
+    Character targetedChar = findCharAtCoordinates(mouseTileX, mouseTileY);
+    if (targetedChar != null && charactersInRange.contains(targetedChar) && !targetedChar.isBlue) {
       noCursor();
       image(fightCursor, mouseX - fightCursor.width/2, mouseY - fightCursor.height/2);
-    }else{
+    } else {
       cursor();
     }
 
 
-    textSize(20);
-    if (selectedCharacter != null){
-      text(selectedCharacter.name,10,60);
-    }
+    
     switch(currentState) {
     case Idle:
-      text("Idle",10,30);
+      text("Idle", 10, 30);
       break;
 
     case PlayerSelected:
-      text("PlayerSelected",10,30);
+      text("PlayerSelected", 10, 30);
+      textSize(20);
+      text(selectedCharacter.name, 10, 60);
+      
+      MapCell hoverCell = null;
+      if (mouseTileX >=0 && mouseTileX < nbCols && mouseTileY >= 0 && mouseTileY < nbRows)
+        hoverCell = tiles[mouseTileY][mouseTileX];
+
+      if (hoverCell != null && hoverCell.previous != null) {
+        hoverCell.displayPoint();
+      }
       break;
 
     case EnemySelected:
-      text("EnemySelected",10,30);
+      text("EnemySelected", 10, 30);
       break;
 
     case WaitingForPlayerAction:
-      text("WaitingForPlayerAction",10,30);
+      text("WaitingForPlayerAction", 10, 30);
       break;
 
     default:
       println("default");
+    }
+    
+    for (var c : characters) {
+      c.draw(x, y, w, h, nbCols, nbRows);
     }
   }
 }
