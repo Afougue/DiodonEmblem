@@ -217,9 +217,10 @@ class World {
     charactersInRange.clear();
   }
 
-  void moveSelectedCharacter(int tileX, int tileY) {
-    println("Moving ", selectedCharacter.name, " from (", selectedCharacter.fieldPosX, ',', selectedCharacter.fieldPosY, ") to (", tileX, ',', tileY, ")");
-    selectedCharacter.newPosition(tileX, tileY);
+  void moveSelectedCharacter(MapCell tile) {
+    println("Moving ", selectedCharacter.name, " from (", selectedCharacter.fieldPosX, ',', selectedCharacter.fieldPosY, ") to (", tile.idX, ',', tile.idY, ")");
+    selectedCharacter.addMovingPath(tile.getPath());
+    selectedCharacter.newPosition(tile.idX, tile.idY);
     unHighlightAccessibleTiles();
     unHighlightAttackableTiles();
     highlightAttackableTiles();
@@ -308,7 +309,7 @@ class World {
     case PlayerSelected:
       // Move if possible
       if (selectedCell.highlighted && !selectedCharacter.hasMoved && targetedChar == null) { // Vérifier si problème en volant ?
-        moveSelectedCharacter(cellX, cellY);
+        moveSelectedCharacter(selectedCell);
         break;
       }
 
@@ -376,7 +377,7 @@ class World {
       highlightAccessibleTiles();
       int randomIndex = random.nextInt(accessibleTiles.size());
       MapCell randomAccessibleCell = accessibleTiles.get(randomIndex);
-      moveSelectedCharacter(randomAccessibleCell.idX, randomAccessibleCell.idY);
+      moveSelectedCharacter(randomAccessibleCell);
       unHighlightAccessibleTiles();
     }
   }
@@ -447,7 +448,8 @@ class World {
     }
     
     for (var c : characters) {
-      c.draw(x, y, w, h, nbCols, nbRows);
+      c.draw(tiles[c.fieldPosY][c.fieldPosX].getCharacterPos());
+      //c.draw(x, y, w, h, nbCols, nbRows);
     }
   }
 }

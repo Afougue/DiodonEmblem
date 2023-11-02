@@ -36,6 +36,18 @@ class MapCell {
       previous.displayPoint();
     }
   }
+  
+  ArrayList<PVector> getPathRecursive(ArrayList<PVector> oldPath){
+    oldPath.add(0,new PVector(lastX + tileWidth/2, lastY + 5 * tileHeight/6 ));
+    if (previous == null){
+      return oldPath;
+    }
+    return previous.getPathRecursive(oldPath);
+  }
+    
+  ArrayList<PVector> getPath(){
+    return getPathRecursive(new ArrayList<PVector>());
+  }
 
   void draw(float x, float y) {
     lastX = x;
@@ -70,5 +82,9 @@ class MapCell {
       fill(255, 127, 0, 128);
       rect(x, y, tileWidth, tileHeight);
     }
+  }
+  
+  PVector getCharacterPos(){
+    return new PVector(lastX + tileWidth/2,lastY + 5 * tileHeight/6 );
   }
 }

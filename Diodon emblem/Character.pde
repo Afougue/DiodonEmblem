@@ -6,17 +6,22 @@ public class Character {
 
   ArrayList<Tool> tools;
   int selectedToolIndex = -1;
-  
+
   // Map actions variable
   boolean hasAttacked;
   boolean hasMoved;
 
   // Display variables
-  int fieldPosX, fieldPosY;
+  int fieldPosX, fieldPosY; // col and row
   int isSelected; // might be used later to have a custom animation when char is selected
   float hoverY;
   float hoverStep = 0.1;
-  
+  boolean moving =false;
+  ArrayList<PVector> movingPath;
+  float movingX, movingY;
+  float moveSpeed = 4;
+
+
 
   public Character(String name, boolean blue, int hp, int str, int spd, boolean fly) {
     this.name = name;
@@ -26,15 +31,15 @@ public class Character {
     strength = str;
     speed = spd;
     flying = fly;
-    
+
     hasAttacked = false;
     hasMoved = false;
 
     fieldPosX = 0;
     fieldPosY = 0;
   }
-  
-  void switchTool(int idTool){
+
+  void switchTool(int idTool) {
     selectedToolIndex = idTool;
     world.updateCharacterRange(this);
   }
@@ -48,22 +53,64 @@ public class Character {
     fieldPosY = cellY;
   }
 
-  void draw(float x, float y, float w, float h, float cols, float rows) {
+  void addMovingPath(ArrayList<PVector> path) {
+    moving = true;
+    movingPath = path;
+    movingX = path.get(0).x;
+    movingY = path.get(0).y;
+  }
+
+  void draw(PVector position) {
     fill(isBlue ? color(0, 0, 255) : color(255, 0, 0));
     
+    if (!moving) {
+      
+
+      hoverY += hoverStep;
+      if (hoverY > 10 || hoverY < 0) hoverStep *= -1;
+      if (!flying) hoverY = 0;
+      rect(position.x - 17, position.y-60 - hoverY, 35, 60);
+    } else {
+      // go closer to next position
+      if(movingX > movingPath.get(0).x){
+        movingX = max(movingPath.get(0).x, movingX-moveSpeed);
+      }else{
+        movingX = min(movingPath.get(0).x, movingX+moveSpeed);
+      }
+      
+      if(movingY > movingPath.get(0).y){
+        movingY = max(movingPath.get(0).y, movingY-moveSpeed);
+      }else{
+        movingY = min(movingPath.get(0).y, movingY+moveSpeed);
+      }
+      
+      rect(movingX - 17, movingY-60 - hoverY, 35, 60);
+      
+      
+      if(movingX == movingPath.get(0).x && movingY == movingPath.get(0).y){
+        movingPath.remove(0);
+        if (movingPath.isEmpty()){
+          moving = false;
+        }
+      }
+      
+    }
+  }
+
+  void draw(float x, float y, float w, float h, float cols, float rows) {
+    fill(isBlue ? color(0, 0, 255) : color(255, 0, 0));
+
     hoverY += hoverStep;
     if (hoverY > 10 || hoverY < 0) hoverStep *= -1;
-    if(!flying) hoverY = 0;
-    
+    if (!flying) hoverY = 0;
+
     rect(x + w/rows * fieldPosX + 7, y + h/cols * fieldPosY - 20 - hoverY, 35, 60);
   }
-  
-  int getCurrentToolRange(){
-    if (selectedToolIndex == -1){
+
+  int getCurrentToolRange() {
+    if (selectedToolIndex == -1) {
       return 0;
     }
     return tools.get(selectedToolIndex).range;
   }
-  
-  
 }
