@@ -12,6 +12,8 @@ BattleManager battleManager;
 PlayerMenu    playerMenu;
 InventoryMenu inventoryMenu;
 
+SpriteSheet sp;
+PImage banane;
 ArrayList<Character> characters;
 PImage icon;
 
@@ -22,8 +24,9 @@ enum PlayerMenuAction {
 }
 
 void setup () {
+  noSmooth();
   size(640, 640);
-  frameRate(60);
+  frameRate(12);
   icon = loadImage("data/cursor/mouseCursor.png");
   surface.setIcon(icon);
 
@@ -51,8 +54,8 @@ void setup () {
   characters.add(cBob);
   characters.add(c2);
   characters.add(c3);
-
-
+  sp = new SpriteSheet("data/resources/troopAnimations/f1_caliber-o.png","data/resources/troopAnimations/f1_caliber-o.plist.json");
+  sp.setSizeFactor(1);
   battleManager = new BattleManager(width * 0.1, height * 0.1, height * 0.8, width * 0.8);
   int rows = 8;
   int cols = 8;
@@ -83,6 +86,7 @@ void  draw() {
     playerMenu.draw();
     inventoryMenu.draw();
   }
+  image(sp.getNextFrame(),50,50,sp.width,sp.height);
 }
 
 void update() {
