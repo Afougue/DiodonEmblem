@@ -52,7 +52,8 @@ public class BattleManager {
     case None:
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
-        //state = BattleManagerState.MovingHeroForward;
+        state = BattleManagerState.MovingHeroForward;
+        heroSprite.state = spriteState.run;
       }
       break;
 
@@ -75,6 +76,7 @@ public class BattleManager {
       if (heroOffX <= 0) {
         heroOffX = 0;
         state = BattleManagerState.Waiting;
+        heroSprite.state = spriteState.idle;
       }
       break;
 
@@ -82,6 +84,7 @@ public class BattleManager {
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
         state = BattleManagerState.MovingVillainForward;
+        villainSprite.state = spriteState.run;
       }
       break;
 
@@ -104,6 +107,7 @@ public class BattleManager {
       if (villainOffX <= 0) {
         villainOffX = 0;
         state = BattleManagerState.None;
+        villainSprite.state = spriteState.idle;
         batteling = false;
       }
       break;
@@ -166,11 +170,9 @@ public class BattleManager {
 
     if (villain.hp > 0) {
       pushMatrix();
-       scale(-1, 1); // This flips the image horizontally
-       //image(villainSprite.getNextFrame(), 300 - villainOffX, floorYCoord - villainSprite.height, villainSprite.width, villainSprite.height);
-       
-       image(villainSprite.getNextFrame(), -500, 0, villainSprite.width, villainSprite.height);
-       popMatrix();
+      scale(-1, 1); // This flips the image horizontally
+      image(villainSprite.getNextFrame(), -550 + villainOffX, floorYCoord - villainSprite.height, villainSprite.width, villainSprite.height);
+      popMatrix();
     }
 
     // Display characters informations
