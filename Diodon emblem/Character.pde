@@ -62,10 +62,8 @@ public class Character {
 
   void draw(PVector position) {
     fill(isBlue ? color(0, 0, 255) : color(255, 0, 0));
-    
+
     if (!moving) {
-
-
       hoverY += hoverStep;
       if (hoverY > 10 || hoverY < 0) hoverStep *= -1;
       if (!flying) hoverY = 0;
