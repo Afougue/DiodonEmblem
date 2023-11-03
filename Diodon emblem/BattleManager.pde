@@ -1,14 +1,25 @@
-public class BattleManager {
+enum BattleManagerState {
+  None,
+    MovingHeroForward,
+    HeroAttack,
+    MovingHeroBackward,
+    Waiting,
+    MovingVillainForward,
+    VillainAttack,
+    MovingVillainBackward
+}
 
+public class BattleManager {
   // Variable to handle fights
   boolean batteling = false;
   Character hero;
   Character villain;
-
-  boolean heroTurn = true;
+  BattleManagerState state = BattleManagerState.None;
 
   // Variables to draw on screen
+  int waitTimer = 0;
   int x, y, h, w;
+  int heroOffX, villainOffX;
 
   public BattleManager(float x, float y, float h, float w) {
     this.x = (int)x;
@@ -21,24 +32,96 @@ public class BattleManager {
     hero = h;
     villain = v;
     batteling = true;
+    heroOffX = villainOffX = 0;
   }
 
-  void play() {
-    if (!batteling)
-      return;
+  void update() {
+    final int maxOffset = 50;
+    final int waitTimerMax = 50;
 
-    if (!heroTurn)
+    switch(state) {
+    case None:
+      if (waitTimer++ >= waitTimerMax) {
+        waitTimer = 0;
+        state = BattleManagerState.MovingHeroForward;
+      }
+      break;
+
+    case MovingHeroForward:
+      updateCharPosition(true, true);
+
+      if (heroOffX > maxOffset) {
+        state = BattleManagerState.HeroAttack;
+      }
+      break;
+
+    case HeroAttack:
+      updateHealth(true);
+      state = BattleManagerState.MovingHeroBackward;
+      break;
+
+    case MovingHeroBackward:
+      updateCharPosition(true, false);
+
+      if (heroOffX <= 0) {
+        heroOffX = 0;
+        state = BattleManagerState.Waiting;
+      }
+      break;
+
+    case Waiting:
+      if (waitTimer++ >= waitTimerMax) {
+        waitTimer = 0;
+        state = BattleManagerState.MovingVillainForward;
+      }
+      break;
+
+    case MovingVillainForward:
+      updateCharPosition(false, true);
+
+      if (villainOffX > maxOffset) {
+        state = BattleManagerState.VillainAttack;
+      }
+      break;
+
+    case VillainAttack:
+      updateHealth(false);
+      state = BattleManagerState.MovingVillainBackward;
+      break;
+
+    case MovingVillainBackward:
+      updateCharPosition(false, false);
+
+      if (villainOffX <= 0) {
+        villainOffX = 0;
+        state = BattleManagerState.None;
+        batteling = false;
+      }
+      break;
+    }
+
+    // Check if a character died
+    if (hero.hp <= 0 || villain.hp <= 0) {
+      batteling = false;
+      characters.remove(hero.hp <= 0 ? hero : villain);
+    }
+  }
+
+  // Change characters positions to animate the fight
+  private void updateCharPosition(boolean moveHero, boolean moveForward) {
+    if (moveHero) {
+      heroOffX += moveForward ? 1 : -1;
+    } else {
+      villainOffX += moveForward ? 1 : -1;
+    }
+  }
+
+  // Remove Hp
+  private void updateHealth(boolean heroAttacking) {
+    if (!heroAttacking)
       hero.hp -= villain.damage();
     else
       villain.hp -= hero.damage();
-
-    if (hero.hp < 0 || villain.hp < 0)
-      batteling = false;
-
-    heroTurn = !heroTurn;
-
-    if (heroTurn)
-      batteling = false;
   }
 
   void draw() {
@@ -69,12 +152,12 @@ public class BattleManager {
     // Draw characters
     if (hero.hp > 0) {
       fill(color(0, 0, 255));
-      rect(200, 230, 50, 80);
+      rect(200 + heroOffX, 230, 50, 80);
     }
 
     if (villain.hp > 0) {
       fill(color(255, 0, 0));
-      rect(390, 230, 50, 80);
+      rect(390 - villainOffX, 230, 50, 80);
     }
 
     // Display characters informations

@@ -405,7 +405,7 @@ class World {
 
     int mouseTileX = (int)(((mouseX - x) / (float)w) * nbRows);
     int mouseTileY = (int)(((mouseY - y) / (float)h) * nbCols);
-    println("Mouse over :",mouseTileX," ",mouseTileY,nbCols,nbRows,w,h);
+    
     Character targetedChar = findCharAtCoordinates(mouseTileX, mouseTileY);
     if (targetedChar != null && charactersInRange.contains(targetedChar) && !targetedChar.isBlue) {
       noCursor();

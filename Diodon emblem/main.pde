@@ -88,6 +88,9 @@ void update() {
   inventoryMenu.enable = enableMenus;
 
   inventoryMenu.currentChar = world.selectedCharacter;
+  
+  if(battleManager.batteling)
+    battleManager.update();
 }
 
 
@@ -113,11 +116,6 @@ void keyPressed(){
 }
 
 void mousePressed() {
-  if (battleManager.batteling) {
-    battleManager.play();
-    return;
-  }
-
   world.mousePressed();
   if (inventoryMenu.enable)
     inventoryMenu.mousePressed();
