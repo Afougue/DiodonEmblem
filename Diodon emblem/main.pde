@@ -1,10 +1,3 @@
-import java.util.Optional;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
 import java.util.*;
 
 World         world;
@@ -24,9 +17,7 @@ enum PlayerMenuAction {
 }
 
 void setup () {
-  noSmooth();
   size(640, 640);
-  frameRate(12);
   icon = loadImage("data/cursor/mouseCursor.png");
   surface.setIcon(icon);
 
@@ -38,7 +29,7 @@ void setup () {
   var c2 = new Character("Ciao", false, 15, 7, 3, true);
   var c3 = new Character("Lennon", false, 10, 20, 1, false);
   c2.newPosition(5, 3);
-  c3.newPosition(5,4);
+  c3.newPosition(5, 4);
 
   ArrayList<Tool> cBobTools = new ArrayList<>(Arrays.asList(new Weapon("Plume", 0, 1), new Weapon("Arc", 1, 4)));
   ArrayList<Tool> cTools = new ArrayList<>(Arrays.asList(new Weapon("Couteau", 5, 1), new Weapon("Épée", 10, 2)));
@@ -54,7 +45,7 @@ void setup () {
   characters.add(cBob);
   characters.add(c2);
   characters.add(c3);
-  sp = new SpriteSheet("data/resources/troopAnimations/f1_caliber-o.png","data/resources/troopAnimations/f1_caliber-o.plist.json");
+  sp = new SpriteSheet("data/resources/troopAnimations/f1_caliber-o.png", "data/resources/troopAnimations/f1_caliber-o.plist.json");
   sp.setSizeFactor(1);
   battleManager = new BattleManager(width * 0.1, height * 0.1, height * 0.8, width * 0.8);
   int rows = 8;
@@ -86,7 +77,7 @@ void  draw() {
     playerMenu.draw();
     inventoryMenu.draw();
   }
-  image(sp.getNextFrame(),50,50,sp.width,sp.height);
+  image(sp.getNextFrame(), 50, 50, sp.width, sp.height);
 }
 
 void update() {
@@ -97,13 +88,13 @@ void update() {
   inventoryMenu.enable = enableMenus;
 
   inventoryMenu.currentChar = world.selectedCharacter;
-  
-  if(battleManager.batteling)
+
+  if (battleManager.batteling)
     battleManager.update();
 }
 
 
-void keyPressed(){
+void keyPressed() {
   //print(key);
   world.endTurn();
   if (key == 'q' || key == 'Q') {
@@ -134,7 +125,7 @@ void mousePressed() {
 
   if (battleManager.batteling)
     return;
-    
+
   if (!playerMenu.enable)
     return;
 

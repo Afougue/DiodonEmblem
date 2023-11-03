@@ -1,25 +1,25 @@
-enum spriteState{
+enum spriteState {
   idle,
-  attack,
-  run,
-  breathing,
-  death,
-  hit
+    attack,
+    run,
+    breathing,
+    death,
+    hit
 }
 
 class SpriteSheet {
   PImage spriteSheet;
-  int frameWidth;
-  int frameHeight;
-  int frameDuration;
-  float extraX;
-  float extraY;
-  float width,height;
   spriteState state;
-  int currentFrame;
   HashMap<String, List<PImage>> animations;
+
+  int frameWidth, frameHeight;
+  int frameDuration;
+  int currentFrame;
+  int timestampPreviousFrame;
+
+  float extraX, extraY;
+  float width, height;
   float sizeFactor;
-  
 
   SpriteSheet(String imageFileName, String jsonFileName) {
     spriteSheet = loadImage(imageFileName);
@@ -35,21 +35,21 @@ class SpriteSheet {
     state = spriteState.idle;
     currentFrame = 0;
     sizeFactor = 1;
-    
+    timestampPreviousFrame = -1;
+
 
     JSONObject lists = json.getJSONObject("lists");
-    for (var animation : lists.keys()) { 
+    for (var animation : lists.keys()) {
       String animationName = (String) animation;
       List<PImage> frames = extractFrames(lists.getJSONArray(animationName));
-      
+
       animations.put(animationName, frames);
-      println(animationName);
     }
     frameWidth *= 2;
     frameHeight *=2;
   }
 
-  List<PImage> extractFrames(JSONArray framesInfo) {
+  private List<PImage> extractFrames(JSONArray framesInfo) {
     List<PImage> frames = new ArrayList<PImage>();
     for (int i = 0; i < framesInfo.size(); i++) {
       JSONObject frame = framesInfo.getJSONObject(i);
@@ -64,32 +64,21 @@ class SpriteSheet {
   List<PImage> getAnimation(String animation) {
     return animations.get(animation);
   }
-  
-  void setSizeFactor(float newSizeFactor){
+
+  void setSizeFactor(float newSizeFactor) {
     sizeFactor = newSizeFactor;
     this.height = frameHeight*sizeFactor;
     this.width = frameWidth*sizeFactor;
   }
-  
-  PImage getNextFrame(){
-    currentFrame = currentFrame + 1;
-    if(currentFrame >= animations.get(state.name()).size()){
-      currentFrame = 0;
-    }
-    PImage currentAnimation = animations.get(state.name()).get(currentFrame).copy();
-    //currentAnimation.resize(frameWidth*sizeFactor,frameHeight*sizeFactor);
-    return currentAnimation;
-  }
 
-  int getFrameDuration() {
-    return frameDuration;
-  }
+  PImage getNextFrame() {
+    // Find the next frame to display
+    float percentOfAnimation = (frameCount % 60)/60.0; // Don't ask me why, it doesn't work when I replaced 60 by frameRate :(  The value in the modulo needs to be an int and the 2nd one, a float
 
-  float getExtraX() {
-    return extraX;
-  }
+    // Intermediary variables to make the code more clear
+    var stateAnimations = animations.get(state.name());
+    int animationIndex = (int)(stateAnimations.size() * percentOfAnimation);
 
-  float getExtraY() {
-    return extraY;
+    return stateAnimations.get(animationIndex);
   }
 }

@@ -72,7 +72,7 @@ class Unit {
 
   void draw() {
     List<PImage> animation = spriteSheet.getAnimation(currentState);
-    int frameDuration = spriteSheet.getFrameDuration();
+    int frameDuration = spriteSheet.frameDuration;
 
     if (millis() - lastFrameTime > frameDuration) {
       currentFrame = currentFrame + 1;
