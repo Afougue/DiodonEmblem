@@ -32,7 +32,7 @@ public class BattleManager {
 
     heroSprite =    new SpriteSheet("data/resources/troopAnimations/f1_sister.png", "data/resources/troopAnimations/f1_sister.plist.json");
     villainSprite = new SpriteSheet("data/resources/troopAnimations/f2_katara.png", "data/resources/troopAnimations/f2_katara.plist.json");
-    
+
     heroSprite.setSizeFactor(1.5);
     villainSprite.setSizeFactor(1.5);
   }
@@ -52,7 +52,7 @@ public class BattleManager {
     case None:
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
-        state = BattleManagerState.MovingHeroForward;
+        //state = BattleManagerState.MovingHeroForward;
       }
       break;
 
@@ -135,7 +135,7 @@ public class BattleManager {
 
   void draw() {
     final int floorYCoord = 450; // Use to position characters
-    
+
     // BattleManager frame
     rect(x, y, w, h);
 
@@ -162,10 +162,16 @@ public class BattleManager {
 
     // Draw characters
     if (hero.hp > 0)
-      image(heroSprite.getNextFrame(), 200 + heroOffX, floorYCoord - heroSprite.height, heroSprite.width, heroSprite.height);
+      image(heroSprite.getNextFrame(), 80 + heroOffX, floorYCoord - heroSprite.height, heroSprite.width, heroSprite.height);
 
-    if (villain.hp > 0)
-      image(villainSprite.getNextFrame(), 390 - villainOffX, floorYCoord - villainSprite.height, villainSprite.width, villainSprite.height);
+    if (villain.hp > 0) {
+      pushMatrix();
+       scale(-1, 1); // This flips the image horizontally
+       //image(villainSprite.getNextFrame(), 300 - villainOffX, floorYCoord - villainSprite.height, villainSprite.width, villainSprite.height);
+       
+       image(villainSprite.getNextFrame(), -500, 0, villainSprite.width, villainSprite.height);
+       popMatrix();
+    }
 
     // Display characters informations
     fill(color(0, 0, 0));
