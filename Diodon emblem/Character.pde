@@ -15,7 +15,7 @@ public class Character {
   int fieldPosX, fieldPosY; // col and row
   int isSelected; // might be used later to have a custom animation when char is selected
   float hoverY;
-  float hoverStep = 0.1;
+  float hoverStep = 0.4;
   boolean moving =false;
   ArrayList<PVector> movingPath;
   float movingX, movingY;
@@ -64,7 +64,7 @@ public class Character {
     fill(isBlue ? color(0, 0, 255) : color(255, 0, 0));
     
     if (!moving) {
-      
+
 
       hoverY += hoverStep;
       if (hoverY > 10 || hoverY < 0) hoverStep *= -1;
@@ -72,39 +72,28 @@ public class Character {
       rect(position.x - 17, position.y-60 - hoverY, 35, 60);
     } else {
       // go closer to next position
-      if(movingX > movingPath.get(0).x){
+      if (movingX > movingPath.get(0).x) {
         movingX = max(movingPath.get(0).x, movingX-moveSpeed);
-      }else{
+      } else {
         movingX = min(movingPath.get(0).x, movingX+moveSpeed);
       }
-      
-      if(movingY > movingPath.get(0).y){
+
+      if (movingY > movingPath.get(0).y) {
         movingY = max(movingPath.get(0).y, movingY-moveSpeed);
-      }else{
+      } else {
         movingY = min(movingPath.get(0).y, movingY+moveSpeed);
       }
-      
+
       rect(movingX - 17, movingY-60 - hoverY, 35, 60);
-      
-      
-      if(movingX == movingPath.get(0).x && movingY == movingPath.get(0).y){
+
+
+      if (movingX == movingPath.get(0).x && movingY == movingPath.get(0).y) {
         movingPath.remove(0);
-        if (movingPath.isEmpty()){
+        if (movingPath.isEmpty()) {
           moving = false;
         }
       }
-      
     }
-  }
-
-  void draw(float x, float y, float w, float h, float cols, float rows) {
-    fill(isBlue ? color(0, 0, 255) : color(255, 0, 0));
-
-    hoverY += hoverStep;
-    if (hoverY > 10 || hoverY < 0) hoverStep *= -1;
-    if (!flying) hoverY = 0;
-
-    rect(x + w/rows * fieldPosX + 7, y + h/cols * fieldPosY - 20 - hoverY, 35, 60);
   }
 
   int getCurrentToolRange() {

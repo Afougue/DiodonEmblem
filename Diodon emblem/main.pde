@@ -2,6 +2,10 @@ import java.util.Optional;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.*;
 
 World         world;
 BattleManager battleManager;
@@ -19,6 +23,7 @@ enum PlayerMenuAction {
 
 void setup () {
   size(640, 640);
+  frameRate(60);
   icon = loadImage("data/cursor/mouseCursor.png");
   surface.setIcon(icon);
 
