@@ -21,11 +21,20 @@ public class BattleManager {
   int x, y, h, w;
   int heroOffX, villainOffX;
 
+  // Sprites
+  SpriteSheet heroSprite, villainSprite;
+
   public BattleManager(float x, float y, float h, float w) {
     this.x = (int)x;
     this.y = (int)y;
     this.h = (int)h;
     this.w = (int)w;
+
+    heroSprite =    new SpriteSheet("data/resources/troopAnimations/f1_sister.png", "data/resources/troopAnimations/f1_sister.plist.json");
+    villainSprite = new SpriteSheet("data/resources/troopAnimations/f2_katara.png", "data/resources/troopAnimations/f2_katara.plist.json");
+    
+    heroSprite.setSizeFactor(1.5);
+    villainSprite.setSizeFactor(1.5);
   }
 
   void startBattle(Character h, Character v) {
@@ -125,6 +134,8 @@ public class BattleManager {
   }
 
   void draw() {
+    final int floorYCoord = 450; // Use to position characters
+    
     // BattleManager frame
     rect(x, y, w, h);
 
@@ -150,15 +161,11 @@ public class BattleManager {
     quad(x1, y1, x3, y3, x4, y4, x2, y2);
 
     // Draw characters
-    if (hero.hp > 0) {
-      fill(color(0, 0, 255));
-      rect(200 + heroOffX, 230, 50, 80);
-    }
+    if (hero.hp > 0)
+      image(heroSprite.getNextFrame(), 200 + heroOffX, floorYCoord - heroSprite.height, heroSprite.width, heroSprite.height);
 
-    if (villain.hp > 0) {
-      fill(color(255, 0, 0));
-      rect(390 - villainOffX, 230, 50, 80);
-    }
+    if (villain.hp > 0)
+      image(villainSprite.getNextFrame(), 390 - villainOffX, floorYCoord - villainSprite.height, villainSprite.width, villainSprite.height);
 
     // Display characters informations
     fill(color(0, 0, 0));

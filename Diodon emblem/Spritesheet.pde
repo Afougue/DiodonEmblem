@@ -14,8 +14,6 @@ class SpriteSheet {
 
   int frameWidth, frameHeight;
   int frameDuration;
-  int currentFrame;
-  int timestampPreviousFrame;
 
   float extraX, extraY;
   float width, height;
@@ -33,10 +31,7 @@ class SpriteSheet {
     extraY = json.getFloat("extraY");
     animations = new HashMap<String, List<PImage>>();
     state = spriteState.idle;
-    currentFrame = 0;
     sizeFactor = 1;
-    timestampPreviousFrame = -1;
-
 
     JSONObject lists = json.getJSONObject("lists");
     for (var animation : lists.keys()) {
