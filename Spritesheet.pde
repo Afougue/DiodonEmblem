@@ -18,6 +18,8 @@ class SpriteSheet {
   float extraX, extraY;
   float width, height;
   float sizeFactor;
+  
+  boolean attackingAnimation = false;
 
   SpriteSheet(String imageFileName, String jsonFileName) {
     spriteSheet = loadImage(imageFileName);
@@ -77,9 +79,15 @@ class SpriteSheet {
     var stateAnimations = animations.get(state.name());
 
     if (millis() - lastFrameTime > frameDuration) {   
-      currentFrame++;
-      if(currentFrame == stateAnimations.size()) 
-        currentFrame = 0;   
+       if(currentFrame == 0 && state == spriteState.attack)
+         attackingAnimation = true;
+      
+      if(++currentFrame == stateAnimations.size()) {
+        currentFrame = 0;
+        
+        if(state == spriteState.attack)
+           attackingAnimation = false;
+      }
       
       lastFrameTime = millis();
     }

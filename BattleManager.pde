@@ -62,12 +62,18 @@ public class BattleManager {
 
       if (heroOffX > maxOffset) {
         state = BattleManagerState.HeroAttack;
+        heroSprite.changeState(spriteState.attack);
       }
       break;
 
     case HeroAttack:
-      updateHealth(true);
-      state = BattleManagerState.MovingHeroBackward;
+      if (waitTimer++ >= waitTimerMax && !heroSprite.attackingAnimation) {
+        waitTimer = 0;
+        heroSprite.changeState(spriteState.run);
+
+        updateHealth(true);
+        state = BattleManagerState.MovingHeroBackward;
+      }
       break;
 
     case MovingHeroBackward:
@@ -93,12 +99,19 @@ public class BattleManager {
 
       if (villainOffX > maxOffset) {
         state = BattleManagerState.VillainAttack;
+        villainSprite.changeState(spriteState.attack);
       }
       break;
 
     case VillainAttack:
-      updateHealth(false);
-      state = BattleManagerState.MovingVillainBackward;
+       if (waitTimer++ >= waitTimerMax && !villainSprite.attackingAnimation) {
+        waitTimer = 0;
+        villainSprite.changeState(spriteState.run);
+
+        updateHealth(false);
+        state = BattleManagerState.MovingVillainBackward;
+      }
+      
       break;
 
     case MovingVillainBackward:
