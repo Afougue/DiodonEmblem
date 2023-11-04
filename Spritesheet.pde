@@ -13,7 +13,7 @@ class SpriteSheet {
   HashMap<String, List<PImage>> animations;
 
   int frameWidth, frameHeight;
-  int frameDuration;
+  int currentFrame, frameDuration, lastFrameTime;
 
   float extraX, extraY;
   float width, height;
@@ -32,6 +32,8 @@ class SpriteSheet {
     animations = new HashMap<String, List<PImage>>();
     state = spriteState.idle;
     sizeFactor = 1;
+    lastFrameTime = millis();
+    currentFrame = 0;
 
     JSONObject lists = json.getJSONObject("lists");
     for (var animation : lists.keys()) {
@@ -67,13 +69,19 @@ class SpriteSheet {
   }
 
   PImage getNextFrame() {
-    // Find the next frame to display
-    float percentOfAnimation = (frameCount % 60)/60.0; // Don't ask me why, it doesn't work when I replaced 60 by frameRate :(  The value in the modulo needs to be an int and the 2nd one, a float
-
-    // Intermediary variables to make the code more clear
     var stateAnimations = animations.get(state.name());
-    int animationIndex = (int)(stateAnimations.size() * percentOfAnimation);
 
-    return stateAnimations.get(animationIndex);
+    if (millis() - lastFrameTime > frameDuration) {
+      currentFrame++;
+      if (currentFrame == stateAnimations.size()) {
+        currentFrame = 0;
+        if (state == spriteState.attack) {
+          state = spriteState.idle;
+        }
+      }
+      lastFrameTime = millis();
+    }
+
+    return stateAnimations.get(currentFrame);
   }
 }
