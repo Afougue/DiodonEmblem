@@ -53,7 +53,7 @@ public class BattleManager {
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
         state = BattleManagerState.MovingHeroForward;
-        heroSprite.state = spriteState.run;
+        heroSprite.changeState(spriteState.run);
       }
       break;
 
@@ -76,7 +76,7 @@ public class BattleManager {
       if (heroOffX <= 0) {
         heroOffX = 0;
         state = BattleManagerState.Waiting;
-        heroSprite.state = spriteState.idle;
+        heroSprite.changeState(spriteState.idle);
       }
       break;
 
@@ -84,7 +84,7 @@ public class BattleManager {
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
         state = BattleManagerState.MovingVillainForward;
-        villainSprite.state = spriteState.run;
+        villainSprite.changeState(spriteState.run);
       }
       break;
 
@@ -107,7 +107,7 @@ public class BattleManager {
       if (villainOffX <= 0) {
         villainOffX = 0;
         state = BattleManagerState.None;
-        villainSprite.state = spriteState.idle;
+        villainSprite.changeState(spriteState.idle);
         batteling = false;
       }
       break;

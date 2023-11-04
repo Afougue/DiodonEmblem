@@ -67,18 +67,20 @@ class SpriteSheet {
     this.height = frameHeight*sizeFactor;
     this.width = frameWidth*sizeFactor;
   }
+  
+  void changeState(spriteState state) {
+    this.state = state; 
+    currentFrame = 0;
+  }
 
   PImage getNextFrame() {
     var stateAnimations = animations.get(state.name());
 
-    if (millis() - lastFrameTime > frameDuration) {
+    if (millis() - lastFrameTime > frameDuration) {   
       currentFrame++;
-      if (currentFrame == stateAnimations.size()) {
-        currentFrame = 0;
-        if (state == spriteState.attack) {
-          state = spriteState.idle;
-        }
-      }
+      if(currentFrame == stateAnimations.size()) 
+        currentFrame = 0;   
+      
       lastFrameTime = millis();
     }
 
