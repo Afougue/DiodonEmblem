@@ -5,9 +5,10 @@ BattleManager battleManager;
 PlayerMenu    playerMenu;
 InventoryMenu inventoryMenu;
 
-PImage banane;
 ArrayList<Character> characters;
 PImage icon;
+
+float transitionPercent = 0;
 
 enum PlayerMenuAction {
   None,
@@ -75,6 +76,22 @@ void  draw() {
     playerMenu.draw();
     inventoryMenu.draw();
   }
+  
+  if(battleManager.state == BattleManagerState.TransitionFromWorld) {
+    fill(0, 0, 0);
+    rect(0, 0, width, height * transitionPercent);
+    transitionPercent += 0.01;
+    
+    if(transitionPercent >= 1) {
+      transitionPercent = 1;
+      battleManager.batteling = true;
+      battleManager.state = BattleManagerState.Starting;
+    }
+  }
+  
+  if(battleManager.state == BattleManagerState.TransitionToWorld) {
+  }
+  
 }
 
 void update() {

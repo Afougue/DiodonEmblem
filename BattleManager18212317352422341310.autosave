@@ -1,7 +1,6 @@
 enum BattleManagerState {
-  None,
-  TransitionFromWorld,
-  Starting,
+  TransitionToBattle,
+    BeginBattle,
     MovingHeroForward,
     HeroAttack,
     MovingHeroBackward,
@@ -9,7 +8,7 @@ enum BattleManagerState {
     MovingVillainForward,
     VillainAttack,
     MovingVillainBackward,
-    BattleEnded,
+    EndBattle,
     TransitionToWorld
 }
 
@@ -18,7 +17,7 @@ public class BattleManager {
   boolean batteling = false;
   Character hero;
   Character villain;
-  BattleManagerState state = BattleManagerState.None;
+  BattleManagerState state = BattleManagerState.TransitionToBattle;
 
   // Variables to draw on screen
   int waitTimer = 0;
@@ -44,8 +43,8 @@ public class BattleManager {
   void startBattle(Character h, Character v) {
     hero = h;
     villain = v;
+    batteling = true;
     heroOffX = villainOffX = 0;
-    state = BattleManagerState.TransitionFromWorld;
   }
 
   void update() {
@@ -53,11 +52,10 @@ public class BattleManager {
     final int waitTimerMax = 50;
 
     switch(state) {
-      case None:
-      case TransitionFromWorld:
+      case TransitionToBattle:
       break;
       
-    case Starting:
+    case BeginBattle:
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
         state = BattleManagerState.MovingHeroForward;
@@ -112,13 +110,14 @@ public class BattleManager {
       break;
 
     case VillainAttack:
-       if (waitTimer++ >= waitTimerMax && !villainSprite.attackingAnimation) {
+      if (waitTimer++ >= waitTimerMax && !villainSprite.attackingAnimation) {
         waitTimer = 0;
         villainSprite.changeState(spriteState.run);
 
         updateHealth(false);
         state = BattleManagerState.MovingVillainBackward;
-      }      
+      }
+
       break;
 
     case MovingVillainBackward:
@@ -126,18 +125,23 @@ public class BattleManager {
 
       if (villainOffX <= 0) {
         villainOffX = 0;
-        state = BattleManagerState.BattleEnded;
+        state = BattleManagerState.EndBattle;
         villainSprite.changeState(spriteState.idle);
       }
       break;
-      
-      case BattleEnded:
+
+    case EndBattle:
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
-        state = BattleManagerState.BattleEnded;
+        state = BattleManagerState.TransitionToWorld;
       }
+      break;
       
       case TransitionToWorld:
+      if(false) {
+        state = BattleManagerState.BeginBattle;
+        batteling = false;
+      }
       break;
     }
 
@@ -164,6 +168,8 @@ public class BattleManager {
     else
       villain.hp -= hero.damage();
   }
+  
+  
 
   void draw() {
     final int floorYCoord = 450; // Use to position characters
