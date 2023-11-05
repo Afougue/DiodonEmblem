@@ -80,19 +80,28 @@ void  draw() {
   if(battleManager.state == BattleManagerState.TransitionFromWorld) {
     fill(0, 0, 0);
     rect(0, 0, width, height * transitionPercent);
-    rect(0, height * transitionPercent, width, height);
-    transitionPercent += 0.01;
+    rect(0, height - height * transitionPercent, width, height);
+    transitionPercent += 0.02;
     
     if(transitionPercent >= 0.5) {
-      transitionPercent = 0.5;
+      transitionPercent = 0;
       battleManager.batteling = true;
       battleManager.state = BattleManagerState.Starting;
     }
   }
   
   if(battleManager.state == BattleManagerState.TransitionToWorld) {
-  }
-  
+    fill(0, 0, 0);
+    rect(0, 0, width, height * transitionPercent);
+    rect(0, height - height * transitionPercent, width, height);
+    transitionPercent += 0.02;
+    
+    if(transitionPercent >= 0.5) {
+      transitionPercent = 0;
+      battleManager.batteling = false;
+      battleManager.state = BattleManagerState.None;
+    } 
+  }  
 }
 
 void update() {

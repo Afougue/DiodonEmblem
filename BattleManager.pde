@@ -134,7 +134,7 @@ public class BattleManager {
       case BattleEnded:
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
-        state = BattleManagerState.BattleEnded;
+        state = BattleManagerState.TransitionToWorld;
       }
       
       case TransitionToWorld:
@@ -167,6 +167,8 @@ public class BattleManager {
 
   void draw() {
     final int floorYCoord = 450; // Use to position characters
+
+    fill(255, 255, 255);
 
     // BattleManager frame
     rect(x, y, w, h);
