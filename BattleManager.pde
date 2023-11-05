@@ -6,7 +6,8 @@ enum BattleManagerState {
     Waiting,
     MovingVillainForward,
     VillainAttack,
-    MovingVillainBackward
+    MovingVillainBackward,
+    End
 }
 
 public class BattleManager {
@@ -119,8 +120,15 @@ public class BattleManager {
 
       if (villainOffX <= 0) {
         villainOffX = 0;
-        state = BattleManagerState.None;
+        state = BattleManagerState.End;
         villainSprite.changeState(spriteState.idle);
+      }
+      break;
+      
+      case End:
+      if (waitTimer++ >= waitTimerMax) {
+        waitTimer = 0;
+        state = BattleManagerState.None;
         batteling = false;
       }
       break;
