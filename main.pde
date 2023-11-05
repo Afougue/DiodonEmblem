@@ -80,10 +80,11 @@ void  draw() {
   if(battleManager.state == BattleManagerState.TransitionFromWorld) {
     fill(0, 0, 0);
     rect(0, 0, width, height * transitionPercent);
+    rect(0, height * transitionPercent, width, height);
     transitionPercent += 0.01;
     
-    if(transitionPercent >= 1) {
-      transitionPercent = 1;
+    if(transitionPercent >= 0.5) {
+      transitionPercent = 0.5;
       battleManager.batteling = true;
       battleManager.state = BattleManagerState.Starting;
     }
