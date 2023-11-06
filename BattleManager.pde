@@ -34,8 +34,8 @@ public class BattleManager {
     this.h = (int)h;
     this.w = (int)w;
 
-    heroSprite =    new SpriteSheet("data/resources/troopAnimations/f1_sister.png", "data/resources/troopAnimations/f1_sister.plist.json");
-    villainSprite = new SpriteSheet("data/resources/troopAnimations/f2_katara.png", "data/resources/troopAnimations/f2_katara.plist.json");
+    heroSprite =    new SpriteSheet("f1_sister");
+    villainSprite = new SpriteSheet("f2_katara");
 
     heroSprite.setSizeFactor(1.5);
     villainSprite.setSizeFactor(1.5);

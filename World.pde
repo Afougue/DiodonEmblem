@@ -270,6 +270,7 @@ class World {
           highlightAttackableTiles();
         currentState = WorldMenuState.PlayerSelected;
         println("Going to state : playerSelected");
+        selectedCharacter.changeState(spriteState.breathing);
         break;
       } else {
         // For an enemy char
@@ -451,6 +452,7 @@ class World {
       text("PlayerSelected", 10, 30);
 
       text(selectedCharacter.name, 10, 60);
+      text(selectedCharacter.sprite.state.name(), 10, 90);
 
       MapCell hoverCell = null;
       if (mouseTileX >=0 && mouseTileX < nbCols && mouseTileY >= 0 && mouseTileY < nbRows)

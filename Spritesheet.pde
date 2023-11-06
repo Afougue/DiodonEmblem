@@ -18,19 +18,24 @@ class SpriteSheet {
   float extraX, extraY;
   float width, height;
   float sizeFactor;
-  
+
   boolean attackingAnimation = false;
 
-  SpriteSheet(String imageFileName, String jsonFileName) {
-    spriteSheet = loadImage(imageFileName);
-    JSONObject json = loadJSONObject(jsonFileName);
+  SpriteSheet(String unitName) {
+    String pngPath = "data/resources/troopAnimations/" + unitName + ".png";
+    spriteSheet = loadImage(pngPath);
+    String jsonPath = pngPath.replace(".png", ".plist.json");
+    JSONObject json = loadJSONObject(jsonPath);
+
     frameWidth = json.getInt("frameWidth");
     frameHeight = json.getInt("frameHeight");
     this.height = frameHeight;
     this.width = frameWidth;
+
     frameDuration = json.getInt("frameDuration");
     extraX = json.getFloat("extraX");
     extraY = json.getFloat("extraY");
+
     animations = new HashMap<String, List<PImage>>();
     state = spriteState.idle;
     sizeFactor = 1;
@@ -71,8 +76,10 @@ class SpriteSheet {
   }
   
   void changeState(spriteState state) {
-    this.state = state; 
-    currentFrame = 0;
+    if (this.state != state) {
+      this.state = state;
+      currentFrame = 0;
+    }
   }
 
   PImage getNextFrame() {

@@ -19,7 +19,12 @@ public class Character {
   boolean moving =false;
   ArrayList<PVector> movingPath;
   float movingX, movingY;
-  float moveSpeed = 4;
+  float moveSpeed = 2;
+
+  // Spritesheet
+  SpriteSheet sprite;
+  boolean facingRight;
+  int YOffset = 20;
 
 
 
@@ -34,6 +39,25 @@ public class Character {
 
     hasAttacked = false;
     hasMoved = false;
+
+    switch (name) {
+    case "Bob":
+      sprite = new SpriteSheet("f2_buildcommon");
+      break;
+    case "Manu":
+      sprite = new SpriteSheet("f1_sister");
+      break;
+    case "Ciao":
+      sprite = new SpriteSheet("neutral_buildepic");
+      break;
+    case "Lennon":
+      sprite = new SpriteSheet("f2_twilightfox");
+      break;
+    default:
+      sprite = new SpriteSheet("f1_sister");
+      break;
+    }
+    facingRight = blue;
 
     fieldPosX = 0;
     fieldPosY = 0;
@@ -58,6 +82,11 @@ public class Character {
     movingPath = path;
     movingX = path.get(0).x;
     movingY = path.get(0).y;
+    sprite.changeState(spriteState.run);
+  }
+  
+  void changeState(spriteState newSprite){
+    sprite.changeState(newSprite);
   }
 
   void draw(PVector position) {
@@ -67,12 +96,23 @@ public class Character {
       hoverY += hoverStep;
       if (hoverY > 10 || hoverY < 0) hoverStep *= -1;
       if (!flying) hoverY = 0;
-      rect(position.x - 17, position.y-60 - hoverY, 35, 60);
+      if (facingRight) {
+        image(sprite.getNextFrame(), position.x - sprite.width/2,  position.y - sprite.height + YOffset, sprite.width, sprite.height);
+      }else{
+        pushMatrix();
+        scale(-1, 1); // This flips the image horizontally
+        image(sprite.getNextFrame(), - (position.x + sprite.width/2),  position.y - sprite.height + YOffset, sprite.width, sprite.height);
+        popMatrix();
+      }
+
     } else {
-      // go closer to next position
-      if (movingX > movingPath.get(0).x) {
+      if(movingX == movingPath.get(0).x){
+        
+      }else if (movingX > movingPath.get(0).x) {
+        facingRight = false;
         movingX = max(movingPath.get(0).x, movingX-moveSpeed);
       } else {
+        facingRight = true;
         movingX = min(movingPath.get(0).x, movingX+moveSpeed);
       }
 
@@ -82,14 +122,22 @@ public class Character {
         movingY = min(movingPath.get(0).y, movingY+moveSpeed);
       }
 
-      rect(movingX - 17, movingY-60 - hoverY, 35, 60);
-
 
       if (movingX == movingPath.get(0).x && movingY == movingPath.get(0).y) {
         movingPath.remove(0);
         if (movingPath.isEmpty()) {
           moving = false;
+          sprite.changeState(spriteState.idle);
         }
+      }
+      
+      if (facingRight) {
+        image(sprite.getNextFrame(), movingX - sprite.width/2,  movingY - sprite.height + YOffset, sprite.width, sprite.height);
+      }else{
+        pushMatrix();
+        scale(-1, 1); // This flips the image horizontally
+        image(sprite.getNextFrame(), - movingX + sprite.width/2, movingY - sprite.height + YOffset, -sprite.width, sprite.height);
+        popMatrix();
       }
     }
   }
