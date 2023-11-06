@@ -15,6 +15,7 @@ class MapCell {
   float lastX = 0;
   float lastY = 0;
   MapCell previous = null;
+  PImage sprite;
 
   MapCell(CellType tileType, float w, float h, int ix, int iy) {
     type = tileType;
@@ -24,6 +25,11 @@ class MapCell {
     highlighted = false;
     idX = ix;
     idY = iy;
+    if (tileType == CellType.GRASS){
+      sprite = loadImage("data/map/grass_1.png");;
+    }else {
+      sprite = loadImage("data/map/mountain_1.png");
+    }
   }
   
   void displayPoint(){
@@ -69,19 +75,20 @@ class MapCell {
     default:
     }
     fill(c);
-    rect(x, y, tileWidth, tileHeight);
+    image(sprite,x,y);
     if (attackRange) {
       strokeWeight(3);
       fill(255, 0, 0, 50);
       stroke(255, 0, 0);
       rect(x+5, y+5, tileWidth-10, tileHeight-10, 0);
       strokeWeight(1);
-      stroke(0);
     }
     if (highlighted) {
+      noStroke();
       fill(255, 127, 0, 128);
       rect(x, y, tileWidth, tileHeight);
     }
+    stroke(0);
   }
   
   PVector getCharacterPos(){
