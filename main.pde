@@ -77,32 +77,30 @@ void  draw() {
     playerMenu.draw();
     inventoryMenu.draw();
   }
-  
-  if(battleManager.state == BattleManagerState.TransitionFromWorld) {
+
+  if (battleManager.state == BattleManagerState.TransitionFromWorld) {
     fill(0, 0, 0);
     rect(0, 0, width, height * transitionPercent);
     rect(0, height - height * transitionPercent, width, height);
     transitionPercent += 0.02;
-    
-    if(transitionPercent >= 0.5) {
+
+    if (transitionPercent >= 0.5) {
       transitionPercent = 0;
-      battleManager.batteling = true;
-      battleManager.state = BattleManagerState.Starting;
+      battleManager.startBattle();
     }
   }
-  
-  if(battleManager.state == BattleManagerState.TransitionToWorld) {
+
+  if (battleManager.state == BattleManagerState.TransitionToWorld) {
     fill(0, 0, 0);
     rect(0, 0, width, height * transitionPercent);
     rect(0, height - height * transitionPercent, width, height);
     transitionPercent += 0.02;
-    
-    if(transitionPercent >= 0.5) {
+
+    if (transitionPercent >= 0.5) {
       transitionPercent = 0;
-      battleManager.batteling = false;
-      battleManager.state = BattleManagerState.None;
-    } 
-  }  
+      battleManager.endBattle();
+    }
+  }
 }
 
 void update() {
@@ -159,7 +157,7 @@ void mousePressed() {
     break;
 
   case Fight:
-    battleManager.startBattle(characters.get(0), characters.get(1));
+    battleManager.initBattle(characters.get(0), characters.get(1));
     break;
 
   case EndTurn:

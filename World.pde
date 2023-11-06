@@ -327,7 +327,7 @@ class World {
           // If in range and can attack
           if (charactersInRange.contains(targetedChar) && !selectedCharacter.hasAttacked) {
             println("Starting battle between", selectedCharacter.name, "and", targetedChar.name);
-            battleManager.startBattle(selectedCharacter, targetedChar);
+            battleManager.initBattle(selectedCharacter, targetedChar);
             unHighlightAttackableTiles();
             unHighlightAccessibleTiles();
             selectedCharacter.hasMoved = true;

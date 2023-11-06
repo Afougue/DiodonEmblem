@@ -1,7 +1,7 @@
 enum BattleManagerState {
   None,
-  TransitionFromWorld,
-  Starting,
+    TransitionFromWorld,
+    Starting,
     MovingHeroForward,
     HeroAttack,
     MovingHeroBackward,
@@ -25,27 +25,38 @@ public class BattleManager {
   int x, y, h, w;
   int heroOffX, villainOffX;
 
-  // Sprites
-  SpriteSheet heroSprite, villainSprite;
-
   public BattleManager(float x, float y, float h, float w) {
     this.x = (int)x;
     this.y = (int)y;
     this.h = (int)h;
     this.w = (int)w;
-
-    heroSprite =    new SpriteSheet("f1_sister");
-    villainSprite = new SpriteSheet("f2_katara");
-
-    heroSprite.setSizeFactor(1.5);
-    villainSprite.setSizeFactor(1.5);
   }
 
-  void startBattle(Character h, Character v) {
+  void initBattle(Character h, Character v) {
     hero = h;
     villain = v;
+
     heroOffX = villainOffX = 0;
     state = BattleManagerState.TransitionFromWorld;
+  }
+
+  void startBattle() {
+    hero.sprite.setSizeFactor(1.5);
+    villain.sprite.setSizeFactor(1.5);
+    
+    state = BattleManagerState.Starting;
+    batteling = true;
+  }
+
+  void endBattle() {
+    hero.changeState(spriteState.idle);
+    villain.changeState(spriteState.idle);
+    
+    hero.sprite.setSizeFactor(1);
+    villain.sprite.setSizeFactor(1);
+    
+    state = BattleManagerState.None;
+    batteling = false;
   }
 
   void update() {
@@ -53,15 +64,15 @@ public class BattleManager {
     final int waitTimerMax = 50;
 
     switch(state) {
-      case None:
-      case TransitionFromWorld:
+    case None:
+    case TransitionFromWorld:
       break;
-      
+
     case Starting:
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
         state = BattleManagerState.MovingHeroForward;
-        heroSprite.changeState(spriteState.run);
+        hero.sprite.changeState(spriteState.run);
       }
       break;
 
@@ -70,14 +81,14 @@ public class BattleManager {
 
       if (heroOffX > maxOffset) {
         state = BattleManagerState.HeroAttack;
-        heroSprite.changeState(spriteState.attack);
+        hero.sprite.changeState(spriteState.attack);
       }
       break;
 
     case HeroAttack:
-      if (waitTimer++ >= waitTimerMax && !heroSprite.attackingAnimation) {
+      if (waitTimer++ >= waitTimerMax && !hero.sprite.attackingAnimation) {
         waitTimer = 0;
-        heroSprite.changeState(spriteState.run);
+        hero.sprite.changeState(spriteState.run);
 
         updateHealth(true);
         state = BattleManagerState.MovingHeroBackward;
@@ -90,7 +101,7 @@ public class BattleManager {
       if (heroOffX <= 0) {
         heroOffX = 0;
         state = BattleManagerState.Waiting;
-        heroSprite.changeState(spriteState.idle);
+        hero.sprite.changeState(spriteState.idle);
       }
       break;
 
@@ -98,7 +109,7 @@ public class BattleManager {
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
         state = BattleManagerState.MovingVillainForward;
-        villainSprite.changeState(spriteState.run);
+        villain.sprite.changeState(spriteState.run);
       }
       break;
 
@@ -107,18 +118,18 @@ public class BattleManager {
 
       if (villainOffX > maxOffset) {
         state = BattleManagerState.VillainAttack;
-        villainSprite.changeState(spriteState.attack);
+        villain.sprite.changeState(spriteState.attack);
       }
       break;
 
     case VillainAttack:
-       if (waitTimer++ >= waitTimerMax && !villainSprite.attackingAnimation) {
+      if (waitTimer++ >= waitTimerMax && !villain.sprite.attackingAnimation) {
         waitTimer = 0;
-        villainSprite.changeState(spriteState.run);
+        villain.sprite.changeState(spriteState.run);
 
         updateHealth(false);
         state = BattleManagerState.MovingVillainBackward;
-      }      
+      }
       break;
 
     case MovingVillainBackward:
@@ -126,24 +137,24 @@ public class BattleManager {
 
       if (villainOffX <= 0) {
         villainOffX = 0;
-        state = BattleManagerState.BattleEnded;
-        villainSprite.changeState(spriteState.idle);
+        villain.sprite.changeState(spriteState.idle);
+        state = BattleManagerState.BattleEnded;        
       }
       break;
-      
-      case BattleEnded:
+
+    case BattleEnded:
       if (waitTimer++ >= waitTimerMax) {
         waitTimer = 0;
         state = BattleManagerState.TransitionToWorld;
       }
-      
-      case TransitionToWorld:
+
+    case TransitionToWorld:
       break;
     }
 
     // Check if a character died
     if (hero.hp <= 0 || villain.hp <= 0) {
-      batteling = false;
+      endBattle();
       characters.remove(hero.hp <= 0 ? hero : villain);
     }
   }
@@ -196,12 +207,12 @@ public class BattleManager {
 
     // Draw characters
     if (hero.hp > 0)
-      image(heroSprite.getNextFrame(), 80 + heroOffX, floorYCoord - heroSprite.height, heroSprite.width, heroSprite.height);
+      image(hero.sprite.getNextFrame(), 80 + heroOffX, floorYCoord - hero.sprite.height, hero.sprite.width, hero.sprite.height);
 
     if (villain.hp > 0) {
       pushMatrix();
       scale(-1, 1); // This flips the image horizontally
-      image(villainSprite.getNextFrame(), -550 + villainOffX, floorYCoord - villainSprite.height, villainSprite.width, villainSprite.height);
+      image(villain.sprite.getNextFrame(), -550 + villainOffX, floorYCoord - villain.sprite.height, villain.sprite.width, villain.sprite.height);
       popMatrix();
     }
 
