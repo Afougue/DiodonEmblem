@@ -58,23 +58,6 @@ class MapCell {
   void draw(float x, float y) {
     lastX = x;
     lastY = y;
-    color c = color(0, 0, 0);
-    switch(type) {
-    case GRASS:
-      c = color(59, 218, 96);
-      break;
-    case WATER:
-      c = color(68, 159, 239);
-      break;
-    case MOUNTAIN:
-      c = color(185, 117, 65);
-      break;
-    case FOREST:
-      c = color(22, 139, 42);
-      break;
-    default:
-    }
-    fill(c);
     image(sprite,x,y);
     if (attackRange) {
       strokeWeight(3);
