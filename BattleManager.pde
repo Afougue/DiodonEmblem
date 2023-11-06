@@ -52,8 +52,8 @@ public class BattleManager {
     hero.changeState(spriteState.idle);
     villain.changeState(spriteState.idle);
     
-    hero.sprite.setSizeFactor(1);
-    villain.sprite.setSizeFactor(1);
+    hero.sprite.setSizeFactor(0.5);
+    villain.sprite.setSizeFactor(0.5);
     
     state = BattleManagerState.None;
     batteling = false;
