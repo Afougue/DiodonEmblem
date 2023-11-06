@@ -18,6 +18,7 @@ enum PlayerMenuAction {
 
 void setup () {
   size(640, 640);
+  noSmooth();
   icon = loadImage("data/cursor/mouseCursor.png");
   surface.setIcon(icon);
 
