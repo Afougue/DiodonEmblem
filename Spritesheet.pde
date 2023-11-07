@@ -2,6 +2,7 @@ enum spriteState {
   idle,
     attack,
     run,
+    walkBack,
     breathing,
     death,
     hit
@@ -10,6 +11,7 @@ enum spriteState {
 class SpriteSheet {
   PImage spriteSheet;
   spriteState state;
+  String name;
   HashMap<String, List<PImage>> animations;
 
   int frameWidth, frameHeight;
@@ -22,6 +24,7 @@ class SpriteSheet {
   boolean attackingAnimation = false;
 
   SpriteSheet(String unitName) {
+    name = unitName;
     String pngPath = "data/resources/troopAnimations/" + unitName + ".png";
     spriteSheet = loadImage(pngPath);
     String jsonPath = pngPath.replace(".png", ".plist.json");
@@ -49,8 +52,16 @@ class SpriteSheet {
 
       animations.put(animationName, frames);
     }
+    createWalkBackAnimation();
     frameWidth *= 2;
     frameHeight *=2;
+  }
+  
+  private void createWalkBackAnimation(){
+    ArrayList<PImage> walkingAnimation = new ArrayList<>(animations.get("run"));
+    Collections.reverse(walkingAnimation);
+    animations.put("walkBack", walkingAnimation);
+    
   }
 
   private List<PImage> extractFrames(JSONArray framesInfo) {

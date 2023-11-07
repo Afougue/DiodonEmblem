@@ -88,7 +88,7 @@ public class BattleManager {
     case HeroAttack:
       if (waitTimer++ >= waitTimerMax && !hero.sprite.attackingAnimation) {
         waitTimer = 0;
-        hero.sprite.changeState(spriteState.run);
+        hero.sprite.changeState(spriteState.walkBack);
 
         updateHealth(true);
         state = BattleManagerState.MovingHeroBackward;
@@ -125,7 +125,7 @@ public class BattleManager {
     case VillainAttack:
       if (waitTimer++ >= waitTimerMax && !villain.sprite.attackingAnimation) {
         waitTimer = 0;
-        villain.sprite.changeState(spriteState.run);
+        villain.sprite.changeState(spriteState.walkBack);
 
         updateHealth(false);
         state = BattleManagerState.MovingVillainBackward;

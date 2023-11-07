@@ -27,9 +27,8 @@ public class Character {
   int YOffset = 20;
 
 
-
-  public Character(String name, boolean blue, int hp, int str, int spd, boolean fly) {
-    this.name = name;
+  public Character(String name, SpriteSheet ss, boolean blue, int hp, int str, int spd, boolean fly) {
+    this.name = ss.name;
     hpMax = this.hp = hp;
 
     isBlue = blue;
@@ -40,28 +39,17 @@ public class Character {
     hasAttacked = false;
     hasMoved = false;
 
-    switch (name) {
-    case "Bob":
-      sprite = new SpriteSheet("f2_buildcommon");
-      break;
-    case "Manu":
-      sprite = new SpriteSheet("f1_sister");
-      break;
-    case "Ciao":
-      sprite = new SpriteSheet("neutral_buildepic");
-      break;
-    case "Lennon":
-      sprite = new SpriteSheet("f2_twilightfox");
-      break;
-    default:
-      sprite = new SpriteSheet("f1_sister");
-      break;
-    }
+    sprite = ss;
     facingRight = blue;
 
     fieldPosX = 0;
     fieldPosY = 0;
   }
+  
+  public Character(String name, boolean blue, int hp, int str, int spd, boolean fly) {
+    this(name, new SpriteSheet(getRandomUnit()), blue, hp, str, spd, fly);
+  }
+
 
   void switchTool(int idTool) {
     selectedToolIndex = idTool;

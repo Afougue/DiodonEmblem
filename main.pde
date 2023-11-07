@@ -1,4 +1,5 @@
 import java.util.*;
+import java.nio.file.*;
 
 World         world;
 BattleManager battleManager;
@@ -28,7 +29,7 @@ void setup () {
   c.newPosition(2, 3);
   cBob.newPosition(2, 4);
   var c2 = new Character("Ciao", false, 15, 7, 3, true);
-  var c3 = new Character("Lennon", false, 10, 20, 1, false);
+  var c3 = new Character("Lennon", false, 10, 4, 1, false);
   c2.newPosition(5, 3);
   c3.newPosition(5, 4);
 
@@ -177,4 +178,15 @@ void mouseMoved() {
 
   if (inventoryMenu.enable)
     inventoryMenu.updateCurrentOveringToolIndex();
+}
+
+
+String getRandomUnit(){
+  try {
+    List<String> allLines = Files.readAllLines(Paths.get(sketchPath() + "/data/resources/units.txt"));
+    return allLines.get(int(random(1)*allLines.size()));
+  } catch (IOException e) {
+      e.printStackTrace();
+  }
+  return "neutral_taura";
 }

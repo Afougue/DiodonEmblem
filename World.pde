@@ -489,6 +489,15 @@ class World {
     Collections.sort(characters, ascendingComparator);
 
     for (var c : characters) {
+      if (!c.moving) {
+        if (c == selectedCharacter) {
+          c.changeState(spriteState.idle);
+        } else {
+          
+          c.changeState(spriteState.breathing);
+        }
+      }
+
       c.draw(tiles[c.fieldPosY][c.fieldPosX].getCharacterPos());
       //c.draw(x, y, w, h, nbCols, nbRows);
     }
