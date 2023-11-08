@@ -22,6 +22,10 @@ void setup () {
   noSmooth();
   icon = loadImage("data/cursor/mouseCursor.png");
   surface.setIcon(icon);
+  
+  // Display loading screen
+  image(loadImage("data/resources/loadingScreen.jpg"),
+    0, 0, width, height);
 
   characters = new ArrayList<>();
   var c = new Character("Manu", true, 20, 5, 16, false);
@@ -67,41 +71,41 @@ void setup () {
 }
 
 void  draw() {
-  background(255);
-
-  update();
-
-  if (battleManager.batteling)
-    battleManager.draw();
-  else {
-    world.draw();
-    playerMenu.draw();
-    inventoryMenu.draw();
-  }
-
-  if (battleManager.state == BattleManagerState.TransitionFromWorld) {
-    fill(0, 0, 0);
-    rect(0, 0, width, height * transitionPercent);
-    rect(0, height - height * transitionPercent, width, height);
-    transitionPercent += 0.02;
-
-    if (transitionPercent >= 0.5) {
-      transitionPercent = 0;
-      battleManager.startBattle();
-    }
-  }
-
-  if (battleManager.state == BattleManagerState.TransitionToWorld) {
-    fill(0, 0, 0);
-    rect(0, 0, width, height * transitionPercent);
-    rect(0, height - height * transitionPercent, width, height);
-    transitionPercent += 0.02;
-
-    if (transitionPercent >= 0.5) {
-      transitionPercent = 0;
-      battleManager.endBattle();
-    }
-  }
+  /*background(255);
+   
+   update();
+   
+   if (battleManager.batteling)
+   battleManager.draw();
+   else {
+   world.draw();
+   playerMenu.draw();
+   inventoryMenu.draw();
+   }
+   
+   if (battleManager.state == BattleManagerState.TransitionFromWorld) {
+   fill(0, 0, 0);
+   rect(0, 0, width, height * transitionPercent);
+   rect(0, height - height * transitionPercent, width, height);
+   transitionPercent += 0.02;
+   
+   if (transitionPercent >= 0.5) {
+   transitionPercent = 0;
+   battleManager.startBattle();
+   }
+   }
+   
+   if (battleManager.state == BattleManagerState.TransitionToWorld) {
+   fill(0, 0, 0);
+   rect(0, 0, width, height * transitionPercent);
+   rect(0, height - height * transitionPercent, width, height);
+   transitionPercent += 0.02;
+   
+   if (transitionPercent >= 0.5) {
+   transitionPercent = 0;
+   battleManager.endBattle();
+   }
+   }*/
 }
 
 void update() {
@@ -181,12 +185,13 @@ void mouseMoved() {
 }
 
 
-String getRandomUnit(){
+String getRandomUnit() {
   try {
     List<String> allLines = Files.readAllLines(Paths.get(sketchPath() + "/data/resources/units.txt"));
     return allLines.get(int(random(1)*allLines.size()));
-  } catch (IOException e) {
-      e.printStackTrace();
+  }
+  catch (IOException e) {
+    e.printStackTrace();
   }
   return "neutral_taura";
 }
