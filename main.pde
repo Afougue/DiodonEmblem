@@ -22,8 +22,8 @@ void setup () {
   noSmooth();
   icon = loadImage("data/cursor/mouseCursor.png");
   surface.setIcon(icon);
-  
-  // Display loading screen
+
+  // Display loading screen cause the setup is sometime laggy
   image(loadImage("data/resources/loadingScreen.jpg"),
     0, 0, width, height);
 
@@ -71,41 +71,22 @@ void setup () {
 }
 
 void  draw() {
-  /*background(255);
-   
-   update();
-   
-   if (battleManager.batteling)
-   battleManager.draw();
-   else {
-   world.draw();
-   playerMenu.draw();
-   inventoryMenu.draw();
-   }
-   
-   if (battleManager.state == BattleManagerState.TransitionFromWorld) {
-   fill(0, 0, 0);
-   rect(0, 0, width, height * transitionPercent);
-   rect(0, height - height * transitionPercent, width, height);
-   transitionPercent += 0.02;
-   
-   if (transitionPercent >= 0.5) {
-   transitionPercent = 0;
-   battleManager.startBattle();
-   }
-   }
-   
-   if (battleManager.state == BattleManagerState.TransitionToWorld) {
-   fill(0, 0, 0);
-   rect(0, 0, width, height * transitionPercent);
-   rect(0, height - height * transitionPercent, width, height);
-   transitionPercent += 0.02;
-   
-   if (transitionPercent >= 0.5) {
-   transitionPercent = 0;
-   battleManager.endBattle();
-   }
-   }*/
+  background(255);
+
+  update();
+
+  if (battleManager.batteling)
+    battleManager.draw();
+  else {
+    world.draw();
+    playerMenu.draw();
+    inventoryMenu.draw();
+  }
+
+  if (battleManager.state == BattleManagerState.TransitionFromWorld)
+    transitionBattleWorld(true);
+  else if (battleManager.state == BattleManagerState.TransitionToWorld)
+    transitionBattleWorld(false);
 }
 
 void update() {
@@ -194,4 +175,20 @@ String getRandomUnit() {
     e.printStackTrace();
   }
   return "neutral_taura";
+}
+
+void transitionBattleWorld(boolean toBattle) {
+  fill(0, 0, 0);
+  rect(0, 0, width, height * transitionPercent);
+  rect(0, height - height * transitionPercent, width, height);
+  transitionPercent += 0.02;
+
+  if (transitionPercent >= 0.5) {
+    transitionPercent = 0;
+    
+    if (toBattle)
+      battleManager.startBattle();
+    else
+      battleManager.endBattle();
+  }
 }
