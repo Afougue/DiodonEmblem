@@ -4,10 +4,12 @@ enum BattleManagerState {
     Starting,
     MovingHeroForward,
     HeroAttack,
+    VillainTakesDamage,
     MovingHeroBackward,
     Waiting,
     MovingVillainForward,
     VillainAttack,
+    HeroTakesDamage,
     MovingVillainBackward,
     BattleEnded,
     TransitionToWorld
@@ -43,7 +45,7 @@ public class BattleManager {
   void startBattle() {
     hero.sprite.setSizeFactor(1.5);
     villain.sprite.setSizeFactor(1.5);
-    
+
     state = BattleManagerState.Starting;
     batteling = true;
   }
@@ -51,10 +53,10 @@ public class BattleManager {
   void endBattle() {
     hero.changeState(spriteState.idle);
     villain.changeState(spriteState.idle);
-    
+
     hero.sprite.setSizeFactor(0.5);
     villain.sprite.setSizeFactor(0.5);
-    
+
     state = BattleManagerState.None;
     batteling = false;
   }
@@ -86,11 +88,19 @@ public class BattleManager {
       break;
 
     case HeroAttack:
-      if (waitTimer++ >= waitTimerMax && !hero.sprite.attackingAnimation) {
-        waitTimer = 0;
-        hero.sprite.changeState(spriteState.walkBack);
+      if (!hero.sprite.attackingAnimation) {
+        villain.sprite.changeState(spriteState.hit);
 
         updateHealth(true);
+        state = BattleManagerState.VillainTakesDamage;
+      }
+      break;
+
+    case VillainTakesDamage:
+    if (!villain.sprite.hitStun) {
+        hero.sprite.changeState(spriteState.walkBack);
+        villain.sprite.changeState(spriteState.idle);
+
         state = BattleManagerState.MovingHeroBackward;
       }
       break;
@@ -123,11 +133,20 @@ public class BattleManager {
       break;
 
     case VillainAttack:
-      if (waitTimer++ >= waitTimerMax && !villain.sprite.attackingAnimation) {
-        waitTimer = 0;
-        villain.sprite.changeState(spriteState.walkBack);
+      if (!villain.sprite.attackingAnimation) {
+        hero.sprite.changeState(spriteState.hit);
 
         updateHealth(false);
+        state = BattleManagerState.HeroTakesDamage;
+      }
+      break;
+
+    case HeroTakesDamage:
+    if (!hero.sprite.hitStun) {
+        waitTimer = 0;
+        villain.sprite.changeState(spriteState.walkBack);
+        hero.sprite.changeState(spriteState.idle);
+
         state = BattleManagerState.MovingVillainBackward;
       }
       break;
@@ -138,7 +157,7 @@ public class BattleManager {
       if (villainOffX <= 0) {
         villainOffX = 0;
         villain.sprite.changeState(spriteState.idle);
-        state = BattleManagerState.BattleEnded;        
+        state = BattleManagerState.BattleEnded;
       }
       break;
 

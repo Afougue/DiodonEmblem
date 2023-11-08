@@ -21,7 +21,9 @@ class SpriteSheet {
   float width, height;
   float sizeFactor;
 
+  // Variable to know if we're in an animation 
   boolean attackingAnimation = false;
+  boolean hitStun = false;
 
   SpriteSheet(String unitName) {
     name = unitName;
@@ -56,12 +58,11 @@ class SpriteSheet {
     frameWidth *= 2;
     frameHeight *=2;
   }
-  
-  private void createWalkBackAnimation(){
+
+  private void createWalkBackAnimation() {
     ArrayList<PImage> walkingAnimation = new ArrayList<>(animations.get("run"));
     Collections.reverse(walkingAnimation);
     animations.put("walkBack", walkingAnimation);
-    
   }
 
   private List<PImage> extractFrames(JSONArray framesInfo) {
@@ -85,28 +86,40 @@ class SpriteSheet {
     this.height = frameHeight*sizeFactor;
     this.width = frameWidth*sizeFactor;
   }
-  
+
   void changeState(spriteState state) {
-    if (this.state != state) {
-      this.state = state;
-      currentFrame = 0;
-    }
+    if (this.state == state)
+      return;
+
+    this.state = state;
+    currentFrame = 0;
+    
+    if(state == spriteState.attack)
+      attackingAnimation = true;
+    else if(state == spriteState.hit)
+      hitStun = true;
   }
 
   PImage getNextFrame() {
     var stateAnimations = animations.get(state.name());
 
-    if (millis() - lastFrameTime > frameDuration) {   
-       if(currentFrame == 0 && state == spriteState.attack)
-         attackingAnimation = true;
-      
-      if(++currentFrame == stateAnimations.size()) {
-        currentFrame = 0;
-        
-        if(state == spriteState.attack)
-           attackingAnimation = false;
+    if (millis() - lastFrameTime > frameDuration) {
+      if (currentFrame == 0) {
+        if (state == spriteState.attack)
+          attackingAnimation = true;
+        else if (state == spriteState.hit)
+          hitStun = true;
       }
-      
+
+      if (++currentFrame == stateAnimations.size()) {
+        currentFrame = 0;
+
+        if (state == spriteState.attack)
+          attackingAnimation = false;
+        else if (state == spriteState.hit)
+          hitStun = false;
+      }
+
       lastFrameTime = millis();
     }
 
