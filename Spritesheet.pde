@@ -27,7 +27,7 @@ class SpriteSheet {
 
   SpriteSheet(String unitName) {
     name = unitName;
-    String pngPath = "data/resources/troopAnimations/" + unitName + ".png";
+    String pngPath = "data/resources/troopAnimations4/" + unitName + ".png";
     spriteSheet = loadImage(pngPath);
     String jsonPath = pngPath.replace(".png", ".plist.json");
     JSONObject json = loadJSONObject(jsonPath);
