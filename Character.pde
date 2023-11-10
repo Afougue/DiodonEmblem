@@ -25,6 +25,8 @@ public class Character {
   SpriteSheet sprite;
   boolean facingRight;
   int YOffset = 20;
+  int cycle = 0;
+  int breathingCycle;
 
 
   public Character(String name, SpriteSheet ss, boolean blue, int hp, int str, int spd, boolean fly) {
@@ -44,10 +46,13 @@ public class Character {
 
     fieldPosX = 0;
     fieldPosY = 0;
+    
+    breathingCycle = int(random(10));
   }
   
   public Character(String name, boolean blue, int hp, int str, int spd, boolean fly) {
-    this(name, new SpriteSheet(getRandomUnit()), blue, hp, str, spd, fly);
+    this(name, new SpriteSheet(getRandomUnit()), blue, hp, str, spd, fly); // deathblighter
+    //this(name, new SpriteSheet("neutral_deathblighter"), blue, hp, str, spd, fly);
   }
 
 
@@ -70,11 +75,15 @@ public class Character {
     movingPath = path;
     movingX = path.get(0).x;
     movingY = path.get(0).y;
-    sprite.changeState(spriteState.run);
+    sprite.changeState(spriteState.run,true);
   }
   
   void changeState(spriteState newSprite){
-    sprite.changeState(newSprite);
+    changeState(newSprite,false);
+  }
+  
+  void changeState(spriteState newSprite, boolean skipFrame){
+    sprite.changeState(newSprite, skipFrame);
   }
 
   void draw(PVector position) {
@@ -115,7 +124,7 @@ public class Character {
         movingPath.remove(0);
         if (movingPath.isEmpty()) {
           moving = false;
-          sprite.changeState(spriteState.idle);
+          sprite.changeState(spriteState.idle,true);
         }
       }
       

@@ -270,7 +270,6 @@ class World {
           highlightAttackableTiles();
         currentState = WorldMenuState.PlayerSelected;
         println("Going to state : playerSelected");
-        selectedCharacter.changeState(spriteState.breathing);
         break;
       } else {
         // For an enemy char
@@ -491,10 +490,10 @@ class World {
     for (var c : characters) {
       if (!c.moving) {
         if (c == selectedCharacter) {
-          c.changeState(spriteState.idle);
+          c.changeState(spriteState.idle,true);
         } else {
           
-          c.changeState(spriteState.breathing);
+          c.changeState(spriteState.idle,true);
         }
       }
 

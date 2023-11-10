@@ -1,8 +1,8 @@
 enum spriteState {
-  idle,
+  idle, // looping animation
     attack,
-    run,
-    walkBack,
+    run, // looping animation
+    walkBack, // looping animation
     breathing,
     death,
     hit
@@ -15,15 +15,19 @@ class SpriteSheet {
   HashMap<String, List<PImage>> animations;
 
   int frameWidth, frameHeight;
-  int currentFrame, frameDuration, lastFrameTime;
+  int currentFrame, lastFrameTime;
+  float frameDuration;
 
   float extraX, extraY;
   float width, height;
   float sizeFactor;
 
-  // Variable to know if we're in an animation 
+  // Variable to know if we're in an animation
   boolean attackingAnimation = false;
   boolean hitStun = false;
+  spriteState lastLoopingAnimation;
+  boolean loopingAnimation; // to loop animation when running or idling
+  ArrayList<spriteState> stateQueue;
 
   SpriteSheet(String unitName) {
     name = unitName;
@@ -57,6 +61,8 @@ class SpriteSheet {
     createWalkBackAnimation();
     frameWidth *= 2;
     frameHeight *=2;
+
+    stateQueue = new ArrayList<>();
   }
 
   private void createWalkBackAnimation() {
@@ -86,43 +92,69 @@ class SpriteSheet {
     this.height = frameHeight*sizeFactor;
     this.width = frameWidth*sizeFactor;
   }
-
+  
   void changeState(spriteState state) {
-    if (this.state == state)
-      return;
+    changeState(state,false);
+  }
 
-    this.state = state;
-    currentFrame = 0;
-    
-    if(state == spriteState.attack)
-      attackingAnimation = true;
-    else if(state == spriteState.hit)
-      hitStun = true;
+  void changeState(spriteState state, boolean skip) {
+    if (!stateQueue.contains(state)) {
+      stateQueue.add(state);
+
+      if (state == spriteState.idle || state == spriteState.run || state == spriteState.walkBack) {
+        lastLoopingAnimation = state;
+      }
+      if(skip){
+        skipCurrentFrame();
+      }
+
+      if (state == spriteState.attack)
+        attackingAnimation = true;
+      else if (state == spriteState.hit)
+        hitStun = true;
+
+      println("Added: ", state.name(), " animation to: ", name);
+    }
+  }
+
+  void skipCurrentFrame() {
+    currentFrame = animations.get(state.name()).size()-1;
+    if (state == spriteState.attack)
+      attackingAnimation = false;
+    else if (state == spriteState.hit)
+      hitStun = false;
   }
 
   PImage getNextFrame() {
-    var stateAnimations = animations.get(state.name());
 
+    // check if next frame time has come
     if (millis() - lastFrameTime > frameDuration) {
-      if (currentFrame == 0) {
-        if (state == spriteState.attack)
-          attackingAnimation = true;
-        else if (state == spriteState.hit)
-          hitStun = true;
-      }
+      currentFrame++;
+      int animationSize = animations.get(state.name()).size();
 
-      if (++currentFrame == stateAnimations.size()) {
-        currentFrame = 0;
-
+      // If end of current animation, go to the next one
+      if (currentFrame >= animationSize) {
+        currentFrame = 0; // reset current frame number
+        /////////////////// Faire des fonctions pour ce qu'il y a ensuite ? ///////////////////
         if (state == spriteState.attack)
           attackingAnimation = false;
         else if (state == spriteState.hit)
           hitStun = false;
-      }
+        /////////////////////////////////////
+        //var lastAnimation = stateQueue.get(0);
+        stateQueue.remove(0); // delete last animation from queue
 
+        // If there is no more animations add the last looping one
+        if (stateQueue.isEmpty()) {
+          stateQueue.add(lastLoopingAnimation);
+        }
+
+        state = stateQueue.get(0);
+      }
       lastFrameTime = millis();
     }
-
-    return stateAnimations.get(currentFrame);
+    if (animations.get(state.name()).size() == 0)
+      println("Animation ", state.name(), " of ", name, " is of size 0");
+    return animations.get(state.name()).get(currentFrame);
   }
 }
