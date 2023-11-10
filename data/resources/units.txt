@@ -368,7 +368,6 @@ f6_frostiva
 f6_general
 f6_ghostseraphim
 f6_grandmasterembla
-f6_gravitywell
 f6_greatwhitenorth
 f6_huldra
 f6_icedryad

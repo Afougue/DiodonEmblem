@@ -26,7 +26,7 @@ class MapCell {
     idX = ix;
     idY = iy;
     if (tileType == CellType.GRASS){
-      sprite = loadImage("data/map/grass_1.png");;
+      sprite = loadImage("data/map/grass_2.png");;
     }else {
       sprite = loadImage("data/map/mountain_1.png");
     }

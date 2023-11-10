@@ -20,6 +20,7 @@ public class BattleManager {
   boolean batteling = false;
   Character hero;
   Character villain;
+  PImage background;
   BattleManagerState state = BattleManagerState.None;
 
   // Variables to draw on screen
@@ -28,6 +29,7 @@ public class BattleManager {
   int heroOffX, villainOffX;
 
   public BattleManager(float x, float y, float h, float w) {
+    background = loadImage("data/battle/battleBackground.png");
     this.x = (int)x;
     this.y = (int)y;
     this.h = (int)h;
@@ -196,43 +198,38 @@ public class BattleManager {
   }
 
   void draw() {
+    image(background,0,0);
     final int floorYCoord = 450; // Use to position characters
 
     fill(255, 255, 255);
 
     // BattleManager frame
+    fill(0,0);
     rect(x, y, w, h);
 
-    // Terrain quadrilateral
-    int x1, x2, x3, x4;
-    int y1, y2, y3, y4;
+     // Draw characters
+    if (state == BattleManagerState.Starting || state == BattleManagerState.TransitionFromWorld || state == BattleManagerState.MovingHeroForward || state == BattleManagerState.HeroAttack || state == BattleManagerState.VillainTakesDamage || state == BattleManagerState.MovingHeroBackward){
+      // Draw characters
+      if (villain.hp > 0) {
+        pushMatrix();
+        scale(-1, 1); // This flips the image horizontally
+        image(villain.sprite.getNextFrame(), -550 + villainOffX, floorYCoord - villain.sprite.height, villain.sprite.width, villain.sprite.height);
+        popMatrix();
+      }
 
-    int b1 = width/2, b2 = height/2; // Base coordinate for the quad
+      if (hero.hp > 0)
+        image(hero.sprite.getNextFrame(), 80 + heroOffX, floorYCoord - hero.sprite.height, hero.sprite.width, hero.sprite.height);
 
-    x1 = b1 - w/4;
-    y1 = b2;
-
-    x2 = b1 - w/3;
-    y2 = b2 + h/4;
-
-    x3 = b1 + w/4;
-    y3 = b2;
-
-    x4 = b1 + w/3;
-    y4 = b2 + h/4;
-
-    fill(color(9, 173, 3));
-    quad(x1, y1, x3, y3, x4, y4, x2, y2);
-
-    // Draw characters
-    if (hero.hp > 0)
-      image(hero.sprite.getNextFrame(), 80 + heroOffX, floorYCoord - hero.sprite.height, hero.sprite.width, hero.sprite.height);
-
-    if (villain.hp > 0) {
-      pushMatrix();
-      scale(-1, 1); // This flips the image horizontally
-      image(villain.sprite.getNextFrame(), -550 + villainOffX, floorYCoord - villain.sprite.height, villain.sprite.width, villain.sprite.height);
-      popMatrix();
+    }else{
+      if (hero.hp > 0)
+        image(hero.sprite.getNextFrame(), 80 + heroOffX, floorYCoord - hero.sprite.height, hero.sprite.width, hero.sprite.height);
+  
+      if (villain.hp > 0) {
+        pushMatrix();
+        scale(-1, 1); // This flips the image horizontally
+        image(villain.sprite.getNextFrame(), -550 + villainOffX, floorYCoord - villain.sprite.height, villain.sprite.width, villain.sprite.height);
+        popMatrix();
+      }
     }
 
     // Display characters informations
