@@ -1,4 +1,4 @@
-public class PlayerMenu {
+ public class PlayerMenu {
 
   final int nbLines = 10;
   private int selectedIndex = 0;

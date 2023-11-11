@@ -62,7 +62,9 @@ class SpriteSheet {
     frameWidth *= 2;
     frameHeight *=2;
 
+    lastLoopingAnimation = spriteState.idle;
     stateQueue = new ArrayList<>();
+    stateQueue.add(spriteState.idle);
   }
 
   private void createWalkBackAnimation() {
@@ -86,6 +88,10 @@ class SpriteSheet {
   List<PImage> getAnimation(String animation) {
     return animations.get(animation);
   }
+  
+  void setLoopingAnimation(spriteState state){
+    lastLoopingAnimation = state;
+  }
 
   void setSizeFactor(float newSizeFactor) {
     sizeFactor = newSizeFactor;
@@ -93,16 +99,16 @@ class SpriteSheet {
     this.width = frameWidth*sizeFactor;
   }
   
-  void changeState(spriteState state) {
-    changeState(state,false);
+  void setNextState(spriteState state) {
+    setNextState(state,false);
   }
 
-  void changeState(spriteState state, boolean skip) {
+  void setNextState(spriteState state, boolean skip) {
     if (!stateQueue.contains(state)) {
       stateQueue.add(state);
 
       if (state == spriteState.idle || state == spriteState.run || state == spriteState.walkBack) {
-        lastLoopingAnimation = state;
+        setLoopingAnimation(state);
       }
       if(skip){
         skipCurrentFrame();

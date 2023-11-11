@@ -75,15 +75,15 @@ public class Character {
     movingPath = path;
     movingX = path.get(0).x;
     movingY = path.get(0).y;
-    sprite.changeState(spriteState.run,true);
+    sprite.setNextState(spriteState.run,true);
   }
   
-  void changeState(spriteState newSprite){
-    changeState(newSprite,false);
+  void setNextState(spriteState newSprite){
+    setNextState(newSprite,false);
   }
   
-  void changeState(spriteState newSprite, boolean skipFrame){
-    sprite.changeState(newSprite, skipFrame);
+  void setNextState(spriteState newSprite, boolean skipFrame){
+    sprite.setNextState(newSprite, skipFrame);
   }
 
   void draw(PVector position) {
@@ -124,7 +124,7 @@ public class Character {
         movingPath.remove(0);
         if (movingPath.isEmpty()) {
           moving = false;
-          sprite.changeState(spriteState.idle,true);
+          sprite.setNextState(spriteState.idle,true);
         }
       }
       
