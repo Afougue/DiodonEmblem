@@ -19,6 +19,7 @@ class World {
   float tileHeight;
   float tileWidth;
   MapCell[][] tiles;
+  WorldAction wa;
 
   ArrayList<Character> characters;
 
@@ -40,6 +41,8 @@ class World {
   WorldMenuState currentState = WorldMenuState.Idle;
 
   World(int rows, int cols, float x, float y, float h, float w, ArrayList<Character> chars) {
+    wa = new WorldAction(this);
+    
     // display position
     this.x = x;
     this.y = y;
@@ -258,141 +261,16 @@ class World {
 
     switch(currentState) {
     case Idle:
-      if (targetedChar == null)
-        break;
-      selectedCharacter = targetedChar;
-
-      if (selectedCharacter.isBlue) {
-        // For a playable char
-        if (!selectedCharacter.hasMoved)
-          highlightAccessibleTiles();
-        if (!selectedCharacter.hasAttacked)
-          highlightAttackableTiles();
-        currentState = WorldMenuState.PlayerSelected;
-        println("Going to state : playerSelected");
-        break;
-      } else {
-        // For an enemy char
-        highlightAccessibleTiles();
-        currentState = WorldMenuState.EnemySelected;
-        println("Going to state : playerSelected");
-        break;
-      }
+      wa.idle(targetedChar);
 
     case EnemySelected:
-      if (targetedChar == null) {
-        currentState = WorldMenuState.Idle;
-        println("Going to state : Idle");
-        unHighlightAccessibleTiles();
-        selectedCharacter = null;
-        break;
-      }
-
-      if (targetedChar.isBlue) {
-        unHighlightAccessibleTiles();
-
-        selectedCharacter = targetedChar;
-        if (!selectedCharacter.hasMoved)
-          highlightAccessibleTiles();
-        if (!selectedCharacter.hasAttacked)
-          highlightAttackableTiles();
-        currentState = WorldMenuState.PlayerSelected;
-        println("Going to state : Idle");
-        break;
-      } else {
-        unHighlightAccessibleTiles();
-        selectedCharacter = targetedChar;
-        highlightAccessibleTiles();
-        break;
-      }
+      wa.enemySelected(targetedChar);
 
     case PlayerSelected:
-
-      // If targeting another character
-      if (targetedChar != null) {
-        // If allied character switch view to him
-        if (targetedChar.isBlue) {
-          unHighlightAttackableTiles();
-          unHighlightAccessibleTiles();
-          selectedCharacter = targetedChar;
-          if (!selectedCharacter.hasMoved)
-            highlightAccessibleTiles();
-          if (!selectedCharacter.hasAttacked)
-            highlightAttackableTiles();
-          break;
-        } else {
-          // If not allied
-
-          // If in range and can attack
-          if (charactersInRange.contains(targetedChar) && !selectedCharacter.hasAttacked) {
-            println("Starting battle between", selectedCharacter.name, "and", targetedChar.name);
-            battleManager.initBattle(selectedCharacter, targetedChar);
-            unHighlightAttackableTiles();
-            unHighlightAccessibleTiles();
-            selectedCharacter.hasMoved = true;
-            selectedCharacter.hasAttacked = true;
-            selectedCharacter = null;
-            currentState = WorldMenuState.Idle;
-            println("Going to state : Idle");
-            break;
-          } else {
-            // Else switch view to enemy
-            unHighlightAttackableTiles();
-            unHighlightAccessibleTiles();
-            selectedCharacter = targetedChar;
-            highlightAccessibleTiles();
-            currentState = WorldMenuState.EnemySelected;
-            println("Going to state : playerSelected");
-            break;
-          }
-        }
-      }else if (selectedCell.highlighted && !selectedCharacter.hasMoved) { // Move if possible
-        moveSelectedCharacter(selectedCell);
-        println("Going to state : MovingChar");
-        currentState = WorldMenuState.MovingChar;
-        break;
-      }
-
-      // Finally return to idle if nothing should have had happenned
-      unHighlightAttackableTiles();
-      unHighlightAccessibleTiles();
-      selectedCharacter = null;
-      currentState = WorldMenuState.Idle;
-      println("Going to state : Idle");
+      wa.playerSelected(targetedChar);
 
     case MovingChar:
-      // If targeting a character
-      if (targetedChar != null) {
-
-        // If allied character switch view to him
-        if (targetedChar.isBlue && targetedChar != selectedCharacter) {
-          selectedCharacter = targetedChar;
-          if (!selectedCharacter.hasMoved)
-            highlightAccessibleTiles();
-          if (!selectedCharacter.hasAttacked)
-            highlightAttackableTiles();
-          break;
-        } else {
-          // Else switch view to enemy
-          unHighlightAttackableTiles();
-          unHighlightAccessibleTiles();
-          selectedCharacter = targetedChar;
-          highlightAccessibleTiles();
-          currentState = WorldMenuState.EnemySelected;
-          println("Going to state : playerSelected");
-          break;
-        }
-      }
-      // Else go to Idle state
-      currentState = WorldMenuState.Idle;
-      println("Going to state : Idle");
-      unHighlightAccessibleTiles();
-      selectedCharacter = null;
-
-      break;
-
-
-
+      wa.movingChar(targetedChar);
 
     default:
       println("default");
