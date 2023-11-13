@@ -174,7 +174,7 @@ String getRandomUnit() {
   catch (IOException e) {
     e.printStackTrace();
   }
-  return "neutral_taura";
+  return "f2_general_skindogehai";
 }
 
 void transitionBattleWorld(boolean toBattle) {
