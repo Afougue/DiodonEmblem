@@ -1,4 +1,4 @@
- public class PlayerMenu {
+public class PlayerMenu {
 
   final int nbLines = 10;
   private int selectedIndex = 0;
@@ -11,6 +11,7 @@
   int x, y, h, w;
   int cursorX1, cursorX2;
   int cursorY1, cursorY2, cursorY3;
+  final int lineHeight = 40;
 
   public PlayerMenu(float x, float y, float h, float w) {
     menuItems = getMenuItemsList();
@@ -30,7 +31,7 @@
 
   void drawCursorAtIndex() {
     fill(color(255, 177, 74));
-    int offsetY = selectedIndex * h / nbLines;
+    int offsetY = selectedIndex * lineHeight;
 
     triangle(cursorX1, cursorY1 + offsetY,
       cursorX2, cursorY2  + offsetY,
@@ -44,7 +45,7 @@
       return;
     }
 
-    selectedIndex = (int)((mouseY - y) / (float)h * nbLines);
+    selectedIndex = (int)((mouseY - y) * menuItems.size() / h);
 
     if (selectedIndex >= menuItems.size())
       selectedIndex = 0;
@@ -82,13 +83,12 @@
         return PlayerMenuAction.Fight;
       return PlayerMenuAction.EndTurn;
     }
-    
+
     return PlayerMenuAction.None;
   }
 
 
   void mousePressed() {
-    
   }
 
   boolean cursorInsideMenu() {
@@ -96,27 +96,31 @@
   }
 
   void draw() {
-    // BattleManager frame
-    fill(enable ? color(255, 255, 255) : color(200, 200, 200));
-    rect(x, y, w, h);
+    final int maxTextChar = 8;
 
     if (!enable)
       return;
 
     // Update text list
     menuItems = getMenuItemsList();
+    
+    // Update menu height
+    h = menuItems.size() * lineHeight + 5;
+
+    // BattleManager frame
+    fill(enable ? color(255, 255, 255) : color(200, 200, 200));
+    rect(x, y, w, h);
 
     // Draw text underline
-    if(selectedIndex >= menuItems.size())
+    if (selectedIndex >= menuItems.size())
       return;
-    
+
     noStroke();
     fill(color(255, 177, 74));
 
-    final int maxTextChar = 8;
     int currentTextChar = menuItems.get(selectedIndex).length();
 
-    rect(x + 10, y + 35 + h/nbLines * selectedIndex,
+    rect(x + 10, y + 35 + lineHeight * selectedIndex,
       (w - 20) * (float)currentTextChar / maxTextChar, 3);
 
     stroke(0);
@@ -127,7 +131,7 @@
 
     int i = 0;
     for (var s : menuItems) {
-      text(s, x + 5, y + 30 + h/nbLines * i++);
+      text(s, x + 5, y + 30 + lineHeight * i++);
     }
 
     // Draw cursor

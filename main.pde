@@ -59,9 +59,9 @@ void setup () {
 
   c.switchTool(0); // needs to be called after world creation for now
   cBob.switchTool(0);
-  playerMenu = new PlayerMenu(world.x + world.w + 10, // Place the playerMenu next to the fieldManager
-    world.y,
-    world.h,
+  playerMenu = new PlayerMenu(world.x - 50 + world.w - 40, // Place the playerMenu on the top left corner
+    world.y - 20,
+    world.h / 3,
     width - (world.x + world.w + 20));
 
   inventoryMenu = new InventoryMenu(world.x,
