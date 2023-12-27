@@ -92,7 +92,7 @@ void  draw() {
 void update() {
   boolean enableMenus = (world.currentState == WorldMenuState.WaitingForPlayerAction) || (world.currentState == WorldMenuState.PlayerSelected);
 
-  playerMenu.enable = enableMenus || (world.currentState == WorldMenuState.Idle);
+  playerMenu.enable = enableMenus;
   playerMenu.allowFight = world.charactersInRange.size() > 0;
   inventoryMenu.enable = enableMenus;
 
